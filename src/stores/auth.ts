@@ -33,6 +33,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function fetchUser() {
     try {
+      await csrf()
       const { data } = await api.get('/api/user')
       user.value = data
     } catch {
@@ -45,6 +46,7 @@ export const useAuthStore = defineStore('auth', () => {
   async function login(civilId: string, password: string) {
     await csrf()
     const { data } = await api.post('/login', { civil_id: civilId, password })
+    await csrf()
     user.value = data
     loaded.value = true
   }

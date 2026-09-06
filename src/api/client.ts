@@ -7,11 +7,29 @@ const api = axios.create({
   withCredentials: true,
   withXSRFToken: true,
   headers: { Accept: 'application/json' },
+  xsrfCookieName: 'XSRF-TOKEN',
+  xsrfHeaderName: 'X-XSRF-TOKEN',
 })
 
+function captureCsrf(headers: Record<string, unknown> | undefined) {
+  const token = headers?.['x-csrf-token'] ?? headers?.['X-CSRF-TOKEN']
+  if (typeof token === 'string' && token) {
+    api.defaults.headers.common['X-CSRF-TOKEN'] = token
+  }
+}
+
 api.interceptors.response.use(
-  (r) => r,
+  (r) => {
+    captureCsrf(r.headers)
+    return r
+  },
   async (error) => {
+    const config = error.config
+    if (error.response?.status === 419 && config && !config._csrfRetry) {
+      config._csrfRetry = true
+      await csrf()
+      return api.request(config)
+    }
     if (error.response?.status === 401 && useAuthStore().user) {
       const auth = useAuthStore()
       auth.clear()
@@ -31,7 +49,8 @@ api.interceptors.response.use(
 )
 
 export async function csrf() {
-  await api.get('/sanctum/csrf-cookie')
+  const { headers } = await api.get('/sanctum/csrf-cookie')
+  captureCsrf(headers)
 }
 
 export default api
