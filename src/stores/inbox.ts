@@ -18,7 +18,7 @@ function sameThread(thread: { type: string; id: number }, type: string, id: numb
 }
 
 function navKeyFor(thread: InboxThread) {
-  const path = (thread.href || '').split('?')[0].split('#')[0]
+  const path = (thread.href || '').split('?')[0]?.split('#')[0] ?? ''
   if (!path) return ''
   if (path === '/dispatch' || path === '/tech') return path
   const segment = path.split('/').filter(Boolean)[0]

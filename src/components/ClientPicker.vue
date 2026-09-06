@@ -123,7 +123,8 @@ function onKey(e: KeyboardEvent) {
   }
   if (e.key === 'Enter' && open.value) {
     e.preventDefault()
-    if (results.value.length) pick(results.value[active.value])
+    const client = results.value[active.value]
+    if (client) pick(client)
     return
   }
   if (!open.value && e.key === 'ArrowDown') {

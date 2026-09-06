@@ -38,7 +38,17 @@ type Dash = {
     recent: { id: number; status: string; client: string | null; client_id: number; technician: { id: number; name_en: string; name_ar: string } | null; location: string | null }[]
   }
   dispatch: null | { unassigned: number; held: number; in_field: number; technicians: { id: number; name_en: string; name_ar: string; active_jobs: number }[] }
-  tech: null | { current: null | { id: number; status: string; client: string | null; location: string | null; notes: string | null }; queue: number }
+  tech: null | {
+    current: null | { id: number; status: string; client?: string | null; location?: string | null; notes?: string | null; department_id?: number | null }
+    queue: number
+    departments?: {
+      id: number
+      name_en?: string
+      name_ar?: string
+      current: { id: number; status: string; client?: string | null } | null
+      queue: number
+    }[]
+  }
   clients: null | { total: number; new_month: number; locations: number; machines: number }
   contracts: null | { total: number; active: number; expiring_30: number; value: number; overdue_installments: number; installment_outstanding: number }
   invoices: null | { draft: number; confirmed: number; outstanding: number; collected_month: number; recent: { id: number; status: string; total: number; client: string | null }[] }

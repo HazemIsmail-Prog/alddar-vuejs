@@ -34,7 +34,7 @@ function dayKey(value?: string | null) {
 
 function fmtDay(key: string) {
   if (key === 'unknown') return t('common.dash')
-  const [year, month, day] = key.split('-').map(Number)
+  const [year = 0, month = 1, day = 1] = key.split('-').map(Number)
   const date = new Date(year, month - 1, day)
   const today = new Date()
   today.setHours(0, 0, 0, 0)

@@ -62,7 +62,7 @@ function blankInstallment(due: string, amount: string, extra: Record<string, any
 }
 
 function blankVisit(date: string, extra: Record<string, any> = {}) {
-  return { key: nextRowKey(), id: null as number | null, planned_date: date, locked: false, sticky: false, ...extra }
+  return { key: nextRowKey(), id: null as number | null, planned_date: date, locked: false, sticky: false, status: undefined as string | undefined, ...extra }
 }
 
 function blankForm() {
@@ -107,7 +107,8 @@ function onClient(client: ClientRecord | null) {
   const locId = Number(form.value.location_id)
   const valid = client.locations?.some((l: any) => l.id === locId)
   if (!valid) {
-    form.value.location_id = client.locations?.length === 1 ? String(client.locations[0].id) : ''
+    const only = client.locations?.[0]
+    form.value.location_id = client.locations?.length === 1 && only ? String(only.id) : ''
     form.value.machine_ids = []
   }
 }
