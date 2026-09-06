@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="/icons/icon-192-light.png" type="image/png" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="/icons/icon-192.png" type="image/png" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon-light.png" media="(prefers-color-scheme: light)">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" media="(prefers-color-scheme: dark)">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="CoolAir">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>CoolAir Field Service</title>
+    <script>
+      try {
+        var theme = localStorage.getItem('theme')
+        var dark = theme === 'dark' || (theme !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+        if (dark) {
+          document.documentElement.classList.add('dark')
+          document.documentElement.setAttribute('data-theme', 'dark')
+        } else {
+          document.documentElement.setAttribute('data-theme', 'light')
+        }
+        var icon = dark ? '/icons/icon-192.png' : '/icons/icon-192-light.png'
+        var apple = dark ? '/icons/apple-touch-icon.png' : '/icons/apple-touch-icon-light.png'
+        document.querySelectorAll('link[rel="icon"]').forEach(function (link) { link.href = icon })
+        document.querySelectorAll('link[rel="apple-touch-icon"]').forEach(function (link) { link.href = apple })
+        document.querySelectorAll('meta[name="theme-color"]').forEach(function (meta) { meta.content = dark ? '#000000' : '#ffffff' })
+        var locale = localStorage.getItem('locale')
+        if (locale !== 'ar' && locale !== 'en') {
+          locale = (navigator.language || '').toLowerCase().indexOf('ar') === 0 ? 'ar' : 'en'
+        }
+        document.documentElement.lang = locale === 'ar' ? 'ar' : 'en'
+        document.documentElement.dir = locale === 'ar' ? 'rtl' : 'ltr'
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
