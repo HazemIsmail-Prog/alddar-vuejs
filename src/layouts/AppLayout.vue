@@ -218,8 +218,7 @@ async function expandAndSearch() {
             :class="collapsed ? 'w-0 flex-none opacity-0' : 'flex-1 opacity-100 delay-75'"
             :aria-hidden="collapsed"
           >
-            <p class="text-xs tracking-[0.2em] text-teal-300 uppercase">{{ t('brand.name') }}</p>
-            <p class="mt-1 text-lg font-semibold">{{ t('brand.fieldService') }}</p>
+            <p class="text-sm font-semibold tracking-wide text-teal-300 uppercase">{{ t('brand.name') }}</p>
           </div>
           <SidebarHint :inline="!collapsed" :text="collapsed ? t('nav.expand') : t('nav.collapse')">
             <button
@@ -330,8 +329,7 @@ async function expandAndSearch() {
     <div class="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto">
       <header class="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 md:hidden dark:border-slate-700">
         <div>
-          <p class="text-[10px] tracking-[0.2em] text-teal-700 uppercase dark:text-teal-300">{{ t('brand.name') }}</p>
-          <p class="text-sm font-semibold">{{ t('brand.fieldService') }}</p>
+          <p class="text-sm font-semibold tracking-wide text-teal-700 uppercase dark:text-teal-300">{{ t('brand.name') }}</p>
         </div>
         <div class="flex items-center gap-2">
           <SidebarHint inline side="bottom" :text="locale.locale === 'ar' ? t('locale.switchToEnglish') : t('locale.switchToArabic')">

@@ -53,8 +53,7 @@ export default {
     printedAt: 'Printed {at}',
   },
   brand: {
-    name: 'CoolAir',
-    fieldService: 'Field Service',
+    name: 'Engineering Home',
   },
   pdf: {
     contracts: 'Contracts',
@@ -468,7 +467,7 @@ export default {
     enable: 'Enable notifications',
     enableHint: 'Allow notifications so new jobs and comments reach you when the phone is locked.',
     denied: 'Notifications are blocked. Enable them in the browser settings for this site.',
-    installIos: 'Add CoolAir to your Home Screen to get job alerts when the phone is locked. Tap Share, then Add to Home Screen.',
+    installIos: 'Add Engineering Home to your Home Screen to get job alerts when the phone is locked. Tap Share, then Add to Home Screen.',
     newJob: 'New job #{id}',
     newComment: 'New comment',
   },

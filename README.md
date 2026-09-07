@@ -1,4 +1,4 @@
-# HVAC Field Service — Vue SPA
+# Engineering Home — Vue SPA
 
 Vue 3 + Vite + Pinia + Vue Router + Tailwind + shadcn-vue-style UI.
 

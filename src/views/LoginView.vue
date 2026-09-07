@@ -45,7 +45,7 @@ async function submit() {
   <div class="grid min-h-full lg:grid-cols-2">
     <div class="hidden bg-sidebar p-12 text-white lg:flex lg:flex-col lg:justify-between">
       <div>
-        <p class="text-xs tracking-[0.25em] text-teal-300 uppercase">{{ t('brand.name') }}</p>
+        <p class="text-sm font-semibold tracking-wide text-teal-300 uppercase">{{ t('brand.name') }}</p>
         <h1 class="mt-6 max-w-md text-4xl font-semibold leading-tight">{{ t('login.headline') }}</h1>
         <p class="mt-4 max-w-sm text-sm text-sidebar-muted">{{ t('login.subhead') }}</p>
       </div>

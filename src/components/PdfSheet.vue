@@ -258,7 +258,6 @@ const client = computed(() => data.value.client || invoice.value.order?.client |
       <header class="pdf-head">
         <div>
           <p class="pdf-brand">{{ t('brand.name') }}</p>
-          <p class="pdf-brand-sub">{{ t('brand.fieldService') }}</p>
         </div>
         <div class="pdf-head-meta">
           <h1>{{ title }}</h1>

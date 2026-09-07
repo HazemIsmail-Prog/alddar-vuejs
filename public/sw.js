@@ -1,5 +1,5 @@
 self.addEventListener('push', (event) => {
-  let data = { title: 'CoolAir', body: '', url: '/tech' }
+  let data = { title: 'Engineering Home', body: '', url: '/tech' }
   try {
     data = { ...data, ...event.data.json() }
   } catch {
@@ -12,7 +12,7 @@ self.addEventListener('push', (event) => {
   }
 
   event.waitUntil(
-    self.registration.showNotification(data.title || 'CoolAir', {
+    self.registration.showNotification(data.title || 'Engineering Home', {
       body: data.body || '',
       icon: '/icons/icon-192.png',
       badge: '/icons/icon-192.png',

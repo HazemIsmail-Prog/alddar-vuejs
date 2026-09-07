@@ -1,6 +1,6 @@
 {
-  "name": "CoolAir Field Service",
-  "short_name": "CoolAir",
+  "name": "Engineering Home",
+  "short_name": "Engineering Home",
   "start_url": "/tech",
   "scope": "/",
   "display": "standalone",
