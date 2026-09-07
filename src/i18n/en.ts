@@ -217,6 +217,7 @@ export default {
     placeholder: 'Search…',
     hint: 'Type at least 2 characters, or an ID.',
     none: 'No matches.',
+    createClient: 'Create client with {phone}',
     groups: {
       client: 'Clients',
       order: 'Orders',

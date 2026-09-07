@@ -217,6 +217,7 @@ export default {
     placeholder: 'بحث…',
     hint: 'اكتب حرفين على الأقل، أو رقماً.',
     none: 'لا توجد نتائج.',
+    createClient: 'إنشاء عميل بهذا الرقم {phone}',
     groups: {
       client: 'العملاء',
       order: 'الطلبات',

@@ -3,9 +3,10 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { onClickOutside, useDebounceFn } from '@vueuse/core'
-import { Search, X } from '@lucide/vue'
+import { Plus, Search, X } from '@lucide/vue'
 import api from '@/api/client'
 import { actionLabel, personName } from '@/i18n'
+import { useAuthStore } from '@/stores/auth'
 import { useModalsStore } from '@/stores/modals'
 import { useStatusStore } from '@/stores/statuses'
 
@@ -27,6 +28,7 @@ const emit = defineEmits<{ navigate: [] }>()
 
 const { t, te } = useI18n()
 const router = useRouter()
+const auth = useAuthStore()
 const modals = useModalsStore()
 const statuses = useStatusStore()
 const query = ref('')
@@ -48,6 +50,8 @@ const canSearch = computed(() => {
   return q.length >= 2 || /^\d+$/.test(q.replace('#', ''))
 })
 const hasResults = computed(() => groups.value.some((g) => g.items.length))
+const isPhoneQuery = computed(() => /^\d{8}$/.test(query.value.trim()))
+const showCreateClient = computed(() => isPhoneQuery.value && auth.can('clients.create'))
 
 function groupLabel(group: SearchGroup) {
   const key = `search.groups.${group.type}`
@@ -115,6 +119,15 @@ async function runAction(action: SearchAction) {
   if (action.to) await router.push(action.to)
 }
 
+function createClientFromPhone() {
+  const phone = query.value.trim()
+  open.value = false
+  query.value = ''
+  groups.value = []
+  emit('navigate')
+  modals.createClient({ phone })
+}
+
 function onKey(event: KeyboardEvent) {
   if (event.key === 'Escape') {
     event.stopPropagation()
@@ -166,7 +179,18 @@ function onKey(event: KeyboardEvent) {
       >
         <p v-if="!canSearch" class="px-3 py-3 text-sm text-slate-500">{{ t('search.hint') }}</p>
         <p v-else-if="loading && !hasResults" class="px-3 py-3 text-sm text-slate-500">{{ t('common.searching') }}</p>
-        <p v-else-if="!loading && !hasResults" class="px-3 py-3 text-sm text-slate-500">{{ t('search.none') }}</p>
+        <div v-else-if="!loading && !hasResults" class="px-3 py-3">
+          <p class="text-sm text-slate-500">{{ t('search.none') }}</p>
+          <button
+            v-if="showCreateClient"
+            type="button"
+            class="mt-2 inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-0.5 text-[11px] font-medium text-slate-700 hover:border-accent hover:text-accent dark:border-slate-600 dark:text-slate-200"
+            @click="createClientFromPhone"
+          >
+            <Plus class="size-3" />
+            {{ t('search.createClient', { phone: query.trim() }) }}
+          </button>
+        </div>
         <div v-else class="py-1">
           <section v-for="group in groups" :key="group.type" class="border-b border-slate-100 last:border-0 dark:border-slate-800">
             <p class="px-3 pt-2 pb-1 text-[10px] font-semibold tracking-wide text-slate-400 uppercase">{{ groupLabel(group) }}</p>

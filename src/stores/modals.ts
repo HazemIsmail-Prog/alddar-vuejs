@@ -11,7 +11,7 @@ export const useModalsStore = defineStore('modals', () => {
     return ++seq
   }
 
-  const clientForm = ref({ token: 0, open: false, id: null as number | null })
+  const clientForm = ref({ token: 0, open: false, id: null as number | null, phone: null as string | null })
   const contractForm = ref({
     token: 0,
     open: false,
@@ -34,16 +34,16 @@ export const useModalsStore = defineStore('modals', () => {
     savedAt.value += 1
   }
 
-  function createClient() {
-    clientForm.value = { token: nextToken(), open: true, id: null }
+  function createClient(opts?: { phone?: string }) {
+    clientForm.value = { token: nextToken(), open: true, id: null, phone: opts?.phone ?? null }
   }
 
   function editClient(id: number) {
-    clientForm.value = { token: nextToken(), open: true, id }
+    clientForm.value = { token: nextToken(), open: true, id, phone: null }
   }
 
   function closeClient() {
-    clientForm.value = { ...clientForm.value, open: false }
+    clientForm.value = { ...clientForm.value, open: false, phone: null }
   }
 
   function createContract(client?: ClientRecord | null) {

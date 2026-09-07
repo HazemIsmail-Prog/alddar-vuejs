@@ -70,6 +70,8 @@ function startCreate() {
   editing.value = blankClient()
   resetExtras()
   error.value = ''
+  const phone = modals.clientForm.phone
+  if (phone) newPhone.value = { ...blankPhoneInput(), phone }
 }
 
 async function startEdit(id: number) {
