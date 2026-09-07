@@ -22,6 +22,7 @@ import {
 import { useAuthStore } from '@/stores/auth'
 import { useStaffReload } from '@/composables/useStaffEvent'
 import { personName } from '@/i18n'
+import LoadingState from '@/components/LoadingState.vue'
 import type { AttachmentRecord } from '@/types/attachment'
 
 const props = defineProps<{ type: string; id: number; hideTitle?: boolean }>()
@@ -30,6 +31,7 @@ const auth = useAuthStore()
 const files = ref<AttachmentRecord[]>([])
 const query = ref('')
 const error = ref('')
+const loading = ref(true)
 const uploading = ref(false)
 const pending = ref<string[]>([])
 const previews = ref<Record<number, string>>({})
@@ -55,10 +57,18 @@ const images = computed(() => filtered.value.filter((file) => file.kind === 'ima
 const others = computed(() => filtered.value.filter((file) => file.kind !== 'image'))
 
 async function load() {
-  if (!props.id) return
-  files.value = (await api.get(`/api/${props.type}/${props.id}/attachments`)).data
-  for (const file of files.value.filter((f) => f.kind === 'image')) {
-    previews.value[file.id] = await attachmentObjectUrl(file.id)
+  if (!props.id) {
+    files.value = []
+    loading.value = false
+    return
+  }
+  try {
+    files.value = (await api.get(`/api/${props.type}/${props.id}/attachments`)).data
+    for (const file of files.value.filter((f) => f.kind === 'image')) {
+      previews.value[file.id] = await attachmentObjectUrl(file.id)
+    }
+  } finally {
+    loading.value = false
   }
 }
 
@@ -128,6 +138,8 @@ function fileIcon(file: AttachmentRecord): Component {
 
 watch(() => [props.type, props.id], () => {
   query.value = ''
+  files.value = []
+  loading.value = true
   load()
 })
 onMounted(load)
@@ -156,7 +168,9 @@ useStaffReload(
       </div>
     </div>
     <p v-if="error" class="text-sm text-red-600">{{ error }}</p>
-    <p v-if="!files.length && !pending.length" class="text-sm text-slate-400">{{ t('comments.noFiles') }}</p>
+    <div class="relative">
+    <LoadingState v-if="loading && !files.length && !pending.length" />
+    <p v-else-if="!files.length && !pending.length" class="text-sm text-slate-400">{{ t('comments.noFiles') }}</p>
     <p v-else-if="!filtered.length && !pending.length" class="text-sm text-slate-400">{{ t('common.noResults') }}</p>
     <div v-else class="flex flex-col gap-3">
       <AttachmentGroup v-if="images.length" class="w-full">
@@ -221,6 +235,8 @@ useStaffReload(
           </AttachmentAction>
         </AttachmentActions>
       </Attachment>
+    </div>
+    <LoadingState v-if="loading && files.length" overlay />
     </div>
     <ConfirmDialog
       v-model:open="confirmOpen"

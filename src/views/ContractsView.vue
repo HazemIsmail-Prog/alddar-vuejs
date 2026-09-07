@@ -12,6 +12,7 @@ import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import PageHeader from '@/components/PageHeader.vue'
 import EmptyState from '@/components/EmptyState.vue'
+import LoadingState from '@/components/LoadingState.vue'
 import ActionMenu from '@/components/ActionMenu.vue'
 import FilterGroup from '@/components/FilterGroup.vue'
 import FilterMulti from '@/components/FilterMulti.vue'
@@ -253,7 +254,9 @@ onMounted(async () => {
       </div>
     </Card>
 
-    <div v-if="contracts.length" class="space-y-3">
+    <div class="relative">
+      <LoadingState v-if="loading && !contracts.length" />
+      <div v-else-if="contracts.length" class="space-y-3">
       <ContractDetailsCard
         v-for="c in contracts"
         :key="c.id"
@@ -271,8 +274,8 @@ onMounted(async () => {
           </div>
         </template>
       </ContractDetailsCard>
-    </div>
-    <div v-else-if="!loading" class="panel">
+      </div>
+      <div v-else class="panel">
       <EmptyState
         :title="hasFilters ? t('common.noResults') : t('contracts.emptyTitle')"
         :description="hasFilters ? undefined : t('contracts.emptyHint')"
@@ -284,6 +287,8 @@ onMounted(async () => {
           </Button>
         </template>
       </EmptyState>
+      </div>
+      <LoadingState v-if="loading && contracts.length" overlay />
     </div>
 
     <ConversationActions

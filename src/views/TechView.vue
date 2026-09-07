@@ -29,6 +29,7 @@ import StatusBadge from '@/components/StatusBadge.vue'
 import ConversationActions from '@/components/ConversationActions.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import PageTabs from '@/components/PageTabs.vue'
+import LoadingState from '@/components/LoadingState.vue'
 import { named, personName, departmentName } from '@/i18n'
 import { useAuthStore } from '@/stores/auth'
 import { useInboxStore } from '@/stores/inbox'
@@ -403,7 +404,8 @@ watch(
   () => String(route.query.department || ''),
   (id, prev) => {
     if (skipDeptWatch.value || acting.value || id === prev) return
-    void load()
+    loading.value = true
+    void load().finally(() => { loading.value = false })
   },
 )
 
@@ -442,9 +444,7 @@ useStaffReload((e) => {
       {{ error }}
     </p>
 
-    <div v-if="loading" class="rounded-xl border border-slate-200 bg-white px-5 py-10 text-center text-sm text-slate-500 dark:border-slate-700">
-      {{ t('tech.loading') }}
-    </div>
+    <LoadingState v-if="loading" :label="t('tech.loading')" />
 
     <div v-else-if="!hasDepartments" class="rounded-xl border border-dashed border-slate-300 bg-white px-5 py-12 text-center dark:border-slate-600">
       <span class="mx-auto flex size-12 items-center justify-center rounded-full bg-slate-100 text-slate-400 dark:bg-slate-800">

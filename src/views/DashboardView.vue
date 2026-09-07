@@ -26,6 +26,7 @@ import { useModalsStore } from '@/stores/modals'
 import { useStatusStore } from '@/stores/statuses'
 import DashboardCharts from '@/components/DashboardCharts.vue'
 import PageHeader from '@/components/PageHeader.vue'
+import LoadingState from '@/components/LoadingState.vue'
 
 type Alert = { key: string; count: number; to: string }
 type Dash = {
@@ -206,7 +207,7 @@ const kpis = computed(() => {
       </template>
     </PageHeader>
 
-    <div v-if="loading" class="text-sm text-slate-500">{{ t('dashboard.loading') }}</div>
+    <LoadingState v-if="loading" :label="t('dashboard.loading')" />
     <div v-else-if="error" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-200">
       {{ error }}
     </div>

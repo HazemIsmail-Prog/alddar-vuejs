@@ -22,6 +22,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import Field from '@/components/ui/Field.vue'
 import ConversationActions from '@/components/ConversationActions.vue'
+import LoadingState from '@/components/LoadingState.vue'
 import ReceivePaymentDialog, { type PaymentDue } from '@/components/ReceivePaymentDialog.vue'
 import PhoneActions from '@/components/PhoneActions.vue'
 import { useAuthStore } from '@/stores/auth'
@@ -183,7 +184,7 @@ useStaffReload((e) => {
 </script>
 
 <template>
-  <div v-if="loading" class="text-sm text-slate-500">{{ t('orders.loading') }}</div>
+  <LoadingState v-if="loading" :label="t('orders.loading')" />
   <div v-else-if="error && !order" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-200">
     {{ error }}
     <RouterLink to="/orders" class="ms-2 text-accent hover:underline">{{ t('orders.allOrders') }}</RouterLink>

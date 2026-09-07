@@ -10,6 +10,7 @@ import Field from '@/components/ui/Field.vue'
 import ClientPicker from '@/components/ClientPicker.vue'
 import PdfExportButton from '@/components/PdfExportButton.vue'
 import { usePdfStore } from '@/stores/pdf'
+import LoadingState from '@/components/LoadingState.vue'
 
 defineProps<{ accounts: any[] }>()
 
@@ -195,9 +196,10 @@ async function exportCollections() {
     <p v-if="error" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{{ error }}</p>
     <p v-else-if="report === 'statement' && !clientId" class="text-sm text-slate-500">{{ t('accounting.statementNeedClient') }}</p>
     <p v-else-if="report === 'ledger' && !accountId" class="text-sm text-slate-500">{{ t('accounting.pickAccount') }}</p>
-    <p v-else-if="loading" class="text-sm text-slate-500">{{ t('common.searching') }}</p>
-
-    <div v-else-if="report === 'pnl' && data" class="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-700">
+    <div v-else class="relative">
+      <LoadingState v-if="loading && !data" />
+      <template v-else-if="data">
+    <div v-if="report === 'pnl'" class="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-700">
       <table class="data-table">
         <thead><tr><th>{{ t('accounting.code') }}</th><th>{{ t('accounting.name') }}</th><th class="text-end">{{ t('accounting.balance') }}</th></tr></thead>
         <tbody>
@@ -215,7 +217,7 @@ async function exportCollections() {
       </table>
     </div>
 
-    <div v-else-if="report === 'balance' && data" class="grid gap-4 lg:grid-cols-2">
+    <div v-else-if="report === 'balance'" class="grid gap-4 lg:grid-cols-2">
       <div class="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-700">
         <table class="data-table">
           <thead><tr><th colspan="2">{{ t('accounting.assets') }}</th></tr></thead>
@@ -241,7 +243,7 @@ async function exportCollections() {
       </div>
     </div>
 
-    <div v-else-if="report === 'ledger' && data" class="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-700">
+    <div v-else-if="report === 'ledger'" class="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-700">
       <table class="data-table">
         <thead>
           <tr>
@@ -275,7 +277,7 @@ async function exportCollections() {
       </table>
     </div>
 
-    <div v-else-if="report === 'ar' && data" class="space-y-3">
+    <div v-else-if="report === 'ar'" class="space-y-3">
       <div class="grid gap-3 sm:grid-cols-5">
         <div class="rounded-lg bg-slate-50 p-3 text-sm"><p class="text-slate-500">{{ t('accounting.bucketCurrent') }}</p><p class="font-semibold">{{ money(data.buckets?.current) }}</p></div>
         <div class="rounded-lg bg-slate-50 p-3 text-sm"><p class="text-slate-500">{{ t('accounting.bucket60') }}</p><p class="font-semibold">{{ money(data.buckets?.days_31_60) }}</p></div>
@@ -310,7 +312,7 @@ async function exportCollections() {
       </div>
     </div>
 
-    <div v-else-if="report === 'collections' && data" class="space-y-3">
+    <div v-else-if="report === 'collections'" class="space-y-3">
       <div class="grid gap-3 sm:grid-cols-4">
         <div class="rounded-lg bg-slate-50 p-3 text-sm"><p class="text-slate-500">{{ named('tech', 'cash') }}</p><p class="font-semibold">{{ money(data.by_method?.cash) }}</p></div>
         <div class="rounded-lg bg-slate-50 p-3 text-sm"><p class="text-slate-500">{{ named('tech', 'card') }}</p><p class="font-semibold">{{ money(data.by_method?.card) }}</p></div>
@@ -344,7 +346,7 @@ async function exportCollections() {
       </div>
     </div>
 
-    <div v-else-if="report === 'statement' && data" class="space-y-3">
+    <div v-else-if="report === 'statement'" class="space-y-3">
       <div class="grid gap-3 sm:grid-cols-5">
         <div class="rounded-lg bg-slate-50 p-3 text-sm"><p class="text-slate-500">{{ t('accounting.opening') }}</p><p class="font-semibold">{{ money(data.opening) }}</p></div>
         <div class="rounded-lg bg-slate-50 p-3 text-sm"><p class="text-slate-500">{{ t('accounting.charged') }}</p><p class="font-semibold">{{ money(data.charged) }}</p></div>
@@ -379,7 +381,7 @@ async function exportCollections() {
       </div>
     </div>
 
-    <div v-else-if="report === 'installments' && data" class="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-700">
+    <div v-else-if="report === 'installments'" class="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-700">
       <table class="data-table">
         <thead>
           <tr>
@@ -407,6 +409,9 @@ async function exportCollections() {
           </tr>
         </tbody>
       </table>
+    </div>
+      </template>
+      <LoadingState v-if="loading && data" overlay />
     </div>
   </div>
 </template>

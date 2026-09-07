@@ -16,6 +16,7 @@ import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import InvoiceDraftDialog from '@/components/InvoiceDraftDialog.vue'
 import PageHeader from '@/components/PageHeader.vue'
 import EmptyState from '@/components/EmptyState.vue'
+import LoadingState from '@/components/LoadingState.vue'
 import ActionMenu from '@/components/ActionMenu.vue'
 import ConversationActions from '@/components/ConversationActions.vue'
 import FilterGroup from '@/components/FilterGroup.vue'
@@ -409,38 +410,42 @@ async function deleteOrder() {
       </div>
     </Card>
 
-    <div v-if="orders.length" class="space-y-3">
-      <OrderDetailsCard
-        v-for="o in orders"
-        :key="o.id"
-        :order="o"
-        show-id
-        class="cursor-pointer transition-colors hover:border-slate-300 dark:hover:border-slate-500"
-        @click="openRow(o)"
-      >
-        <template #actions>
-          <div @click.stop>
-            <ActionMenu
-              :items="rowActions(o)"
-              :badge="orderUnread[o.id]"
-              @select="onRowAction(o, $event)"
-            />
-          </div>
-        </template>
-      </OrderDetailsCard>
-    </div>
-    <div v-else-if="!loading" class="panel">
-      <EmptyState
-        :title="hasFilters ? t('common.noResults') : t('orders.emptyTitle')"
-        :description="hasFilters ? undefined : t('orders.emptyHint')"
-      >
-        <template #icon><ClipboardList class="size-5" /></template>
-        <template v-if="auth.can('orders.create') && !hasFilters" #action>
-          <Button @click="modals.createOrder()">
-            <Plus class="size-4" /> {{ t('orders.place') }}
-          </Button>
-        </template>
-      </EmptyState>
+    <div class="relative">
+      <LoadingState v-if="loading && !orders.length" />
+      <div v-else-if="orders.length" class="space-y-3">
+        <OrderDetailsCard
+          v-for="o in orders"
+          :key="o.id"
+          :order="o"
+          show-id
+          class="cursor-pointer transition-colors hover:border-slate-300 dark:hover:border-slate-500"
+          @click="openRow(o)"
+        >
+          <template #actions>
+            <div @click.stop>
+              <ActionMenu
+                :items="rowActions(o)"
+                :badge="orderUnread[o.id]"
+                @select="onRowAction(o, $event)"
+              />
+            </div>
+          </template>
+        </OrderDetailsCard>
+      </div>
+      <div v-else class="panel">
+        <EmptyState
+          :title="hasFilters ? t('common.noResults') : t('orders.emptyTitle')"
+          :description="hasFilters ? undefined : t('orders.emptyHint')"
+        >
+          <template #icon><ClipboardList class="size-5" /></template>
+          <template v-if="auth.can('orders.create') && !hasFilters" #action>
+            <Button @click="modals.createOrder()">
+              <Plus class="size-4" /> {{ t('orders.place') }}
+            </Button>
+          </template>
+        </EmptyState>
+      </div>
+      <LoadingState v-if="loading && orders.length" overlay />
     </div>
 
     <FormDialog v-model:open="editOpen" :title="t('orders.editTitle')" :submit-label="t('orders.saveOrder')" :error="error" :loading="saving" @submit="saveOrder">

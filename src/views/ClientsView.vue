@@ -11,6 +11,7 @@ import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import PageHeader from '@/components/PageHeader.vue'
 import EmptyState from '@/components/EmptyState.vue'
+import LoadingState from '@/components/LoadingState.vue'
 import PaginationBar from '@/components/PaginationBar.vue'
 import ActionMenu from '@/components/ActionMenu.vue'
 import FilterGroup from '@/components/FilterGroup.vue'
@@ -177,35 +178,39 @@ onMounted(async () => {
       </div>
     </Card>
 
-    <div v-if="clients.length" class="space-y-3">
-      <ClientDetailsCard
-        v-for="c in clients"
-        :key="c.id"
-        :client="c"
-        class="cursor-pointer transition-colors hover:border-slate-300 dark:hover:border-slate-500"
-        @click="openRow(c)"
-      >
-        <template #actions>
-          <ActionMenu
-            :items="rowActions(c)"
-            :badge="clientUnread[c.id]"
-            @select="onRowAction(c, $event)"
-          />
-        </template>
-      </ClientDetailsCard>
-    </div>
-    <div v-else-if="!loading" class="panel">
-      <EmptyState
-        :title="hasFilters ? t('common.noResults') : t('clients.emptyTitle')"
-        :description="hasFilters ? undefined : t('clients.emptyHint')"
-      >
-        <template #icon><Users class="size-5" /></template>
-        <template v-if="auth.can('clients.create') && !hasFilters" #action>
-          <Button @click="modals.createClient()">
-            <Plus class="size-4" /> {{ t('clients.newClient') }}
-          </Button>
-        </template>
-      </EmptyState>
+    <div class="relative">
+      <LoadingState v-if="loading && !clients.length" />
+      <div v-else-if="clients.length" class="space-y-3">
+        <ClientDetailsCard
+          v-for="c in clients"
+          :key="c.id"
+          :client="c"
+          class="cursor-pointer transition-colors hover:border-slate-300 dark:hover:border-slate-500"
+          @click="openRow(c)"
+        >
+          <template #actions>
+            <ActionMenu
+              :items="rowActions(c)"
+              :badge="clientUnread[c.id]"
+              @select="onRowAction(c, $event)"
+            />
+          </template>
+        </ClientDetailsCard>
+      </div>
+      <div v-else class="panel">
+        <EmptyState
+          :title="hasFilters ? t('common.noResults') : t('clients.emptyTitle')"
+          :description="hasFilters ? undefined : t('clients.emptyHint')"
+        >
+          <template #icon><Users class="size-5" /></template>
+          <template v-if="auth.can('clients.create') && !hasFilters" #action>
+            <Button @click="modals.createClient()">
+              <Plus class="size-4" /> {{ t('clients.newClient') }}
+            </Button>
+          </template>
+        </EmptyState>
+      </div>
+      <LoadingState v-if="loading && clients.length" overlay />
     </div>
 
     <PaginationBar :page="page" :last-page="lastPage" @update:page="page = $event" />

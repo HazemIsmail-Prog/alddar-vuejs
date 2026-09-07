@@ -12,6 +12,7 @@ import { useStaffReload } from '@/composables/useStaffEvent'
 import { useVoiceRecorder } from '@/composables/useVoiceRecorder'
 import { useAttachmentMedia } from '@/composables/useAttachmentMedia'
 import { personName } from '@/i18n'
+import LoadingState from '@/components/LoadingState.vue'
 import type { AttachmentRecord } from '@/types/attachment'
 import type { CommentPage, CommentRecord } from '@/types/comments'
 
@@ -22,6 +23,7 @@ const inbox = useInboxStore()
 
 const comments = ref<CommentRecord[]>([])
 const hasMore = ref(false)
+const loading = ref(true)
 const loadingOlder = ref(false)
 const body = ref('')
 const files = ref<File[]>([])
@@ -203,6 +205,9 @@ function mergeLatest(incoming: CommentRecord[]) {
 
 async function load(opts?: { reset?: boolean }) {
   if (!props.id) return
+  const first = !comments.value.some((comment) => comment.id > 0)
+  if (first) loading.value = true
+  try {
   const reset = Boolean(opts?.reset) || !comments.value.some((comment) => comment.id > 0)
   const previousIds = comments.value.map((comment) => comment.id).join(',')
   const previousScroll = listEl.value?.scrollTop ?? 0
@@ -228,6 +233,9 @@ async function load(opts?: { reset?: boolean }) {
     : page.comments.filter((comment) => !known.has(comment.id))
   await loadMedia(mediaRows)
   if (pinned.value) await scrollToBottom()
+  } finally {
+    loading.value = false
+  }
 }
 
 async function loadOlder() {
@@ -336,6 +344,7 @@ watch(() => [props.type, props.id] as const, async (curr, prev) => {
   error.value = ''
   hasMore.value = false
   pinned.value = true
+  loading.value = true
   try {
     await load({ reset: true })
     await markRead()
@@ -376,7 +385,8 @@ onUnmounted(() => {
           {{ loadingOlder ? t('comments.loadingOlder') : t('comments.showOlder') }}
         </Button>
       </div>
-      <p v-if="!comments.length" class="py-8 text-center text-sm text-slate-400">{{ t('comments.empty') }}</p>
+      <LoadingState v-if="loading && !comments.length" />
+      <p v-else-if="!comments.length" class="py-8 text-center text-sm text-slate-400">{{ t('comments.empty') }}</p>
       <div
         v-for="comment in comments"
         :key="comment.id"

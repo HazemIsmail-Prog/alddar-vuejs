@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge'
 import PageHeader from '@/components/PageHeader.vue'
 import SearchField from '@/components/SearchField.vue'
 import EmptyState from '@/components/EmptyState.vue'
+import LoadingState from '@/components/LoadingState.vue'
 import PageTabs from '@/components/PageTabs.vue'
 import PaginationBar from '@/components/PaginationBar.vue'
 import ActionMenu from '@/components/ActionMenu.vue'
@@ -174,7 +175,9 @@ async function remove() {
       {{ error }}
     </p>
 
-    <div class="panel">
+    <div class="relative">
+      <LoadingState v-if="loading && !invoices.length" />
+      <div v-else class="panel">
       <table v-if="invoices.length" class="data-table">
         <thead>
           <tr>
@@ -218,6 +221,8 @@ async function remove() {
       >
         <template #icon><Receipt class="size-5" /></template>
       </EmptyState>
+      </div>
+      <LoadingState v-if="loading && invoices.length" overlay />
     </div>
 
     <PaginationBar :page="page" :last-page="lastPage" @update:page="page = $event" />

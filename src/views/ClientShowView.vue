@@ -24,6 +24,7 @@ import { useModalsStore } from '@/stores/modals'
 import { usePdfStore } from '@/stores/pdf'
 import { useStaffReload } from '@/composables/useStaffEvent'
 import { useReceivePayment } from '@/composables/useReceivePayment'
+import LoadingState from '@/components/LoadingState.vue'
 
 const { t } = useI18n()
 const auth = useAuthStore()
@@ -161,7 +162,7 @@ useStaffReload((e) => {
 
 
 <template>
-  <div v-if="loading" class="text-sm text-slate-500">{{ t('clients.loading') }}</div>
+  <LoadingState v-if="loading" :label="t('clients.loading')" />
   <div v-else-if="error" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-200">
     {{ error }}
     <RouterLink to="/clients" class="ms-2 text-accent hover:underline">{{ t('clients.allClients') }}</RouterLink>

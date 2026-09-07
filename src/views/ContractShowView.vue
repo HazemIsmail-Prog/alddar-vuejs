@@ -22,6 +22,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useModalsStore } from '@/stores/modals'
 import { usePdfStore } from '@/stores/pdf'
 import { useReceivePayment } from '@/composables/useReceivePayment'
+import LoadingState from '@/components/LoadingState.vue'
 
 const { t } = useI18n()
 const auth = useAuthStore()
@@ -130,7 +131,7 @@ watch(() => modals.savedAt, () => {
 </script>
 
 <template>
-  <div v-if="loading" class="text-sm text-slate-500">{{ t('contracts.loading') }}</div>
+  <LoadingState v-if="loading" :label="t('contracts.loading')" />
   <div v-else-if="error" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-200">
     {{ error }}
     <RouterLink to="/contracts" class="ms-2 text-accent hover:underline">{{ t('contracts.allContracts') }}</RouterLink>

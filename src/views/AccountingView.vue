@@ -13,6 +13,7 @@ import Field from '@/components/ui/Field.vue'
 import FormDialog from '@/components/FormDialog.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import AccountingReports from '@/components/AccountingReports.vue'
+import LoadingState from '@/components/LoadingState.vue'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import PageHeader from '@/components/PageHeader.vue'
@@ -57,6 +58,7 @@ const error = ref('')
 const saving = ref(false)
 const confirming = ref(false)
 const running = ref(false)
+const loading = ref(true)
 const accountError = ref('')
 const pageError = ref('')
 let lineKey = 1
@@ -88,7 +90,17 @@ const creditTotal = computed(() =>
   form.value.lines.reduce((sum, line) => sum + (Number(line.credit) || 0), 0),
 )
 
+const tabHasRows = computed(() => {
+  if (tab.value === 'chart') return accounts.value.length > 0
+  if (tab.value === 'journals') return journals.value.length > 0
+  if (tab.value === 'trial') return trial.value.length > 0
+  if (tab.value === 'valuation') return (valuation.value.rows || []).length > 0
+  if (tab.value === 'contracts') return profit.value.length > 0
+  return accounts.value.length > 0
+})
+
 async function load() {
+  loading.value = true
   pageError.value = ''
   try {
     const [journalRes, accountRes, trialRes, profitRes] = await Promise.all([
@@ -108,6 +120,8 @@ async function load() {
     valuation.value = (await api.get('/api/inventory/valuation')).data
   } catch {
     valuation.value = { rows: [] }
+  } finally {
+    loading.value = false
   }
 }
 
@@ -379,6 +393,9 @@ async function submitAccount() {
       </button>
     </div>
 
+    <div class="relative">
+      <LoadingState v-if="loading && !tabHasRows" />
+      <template v-else>
     <AccountingReports v-if="tab === 'reports'" :accounts="accounts" />
 
     <div v-else-if="tab === 'chart'" class="space-y-3">
@@ -555,6 +572,9 @@ async function submitAccount() {
           </tr>
         </tbody>
       </table>
+    </div>
+      </template>
+      <LoadingState v-if="loading && tabHasRows" overlay />
     </div>
 
     <FormDialog v-model:open="journalOpen" :title="selected?.description || t('accounting.journal')" wide hide-submit>

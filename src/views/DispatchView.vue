@@ -15,6 +15,7 @@ import PageHeader from '@/components/PageHeader.vue'
 import PageTabs from '@/components/PageTabs.vue'
 import SearchField from '@/components/SearchField.vue'
 import EmptyState from '@/components/EmptyState.vue'
+import LoadingState from '@/components/LoadingState.vue'
 import ActionMenu from '@/components/ActionMenu.vue'
 import ConversationActions from '@/components/ConversationActions.vue'
 import OrderTimeline from '@/components/OrderTimeline.vue'
@@ -34,6 +35,7 @@ const router = useRouter()
 const board = ref<any>({ departments: [], department_id: null, unassigned: [], planned: [], held: [], technicians: [] })
 const skipDeptWatch = ref(false)
 const loaded = ref(false)
+const loading = ref(true)
 const holdOpen = ref(false)
 const invoiceOpen = ref(false)
 const invoiceOrderId = ref<number | null>(null)
@@ -519,6 +521,7 @@ async function load() {
     error.value = apiError(e)
   } finally {
     loaded.value = true
+    loading.value = false
   }
 }
 
@@ -623,6 +626,7 @@ watch(
   () => String(route.query.department || ''),
   (id, prev) => {
     if (skipDeptWatch.value || id === prev) return
+    loading.value = true
     void load()
   },
 )
@@ -639,13 +643,14 @@ watch(
 
     <PageTabs v-if="deptTabs.length" v-model="selectedDept" :tabs="deptTabs" />
 
+    <LoadingState v-if="loading && !hasBoards" />
     <EmptyState
-      v-if="loaded && !hasBoards"
+      v-else-if="loaded && !hasBoards"
       :title="t('dispatch.emptyTitle')"
       :description="t('dispatch.emptyHint')"
     />
 
-    <div v-else-if="hasBoards" class="flex gap-4 overflow-x-auto pb-4 md:h-[calc(100vh-11rem)] md:min-h-[28rem]">
+    <div v-else-if="hasBoards" class="relative flex gap-4 overflow-x-auto pb-4 md:h-[calc(100vh-11rem)] md:min-h-[28rem]">
       <section
         v-for="col in columns"
         :key="col.id"
@@ -845,6 +850,7 @@ watch(
           </div>
         </template>
       </section>
+      <LoadingState v-if="loading" overlay />
     </div>
 
     <FormDialog

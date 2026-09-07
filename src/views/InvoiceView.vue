@@ -23,6 +23,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useStaffReload } from '@/composables/useStaffEvent'
 import { useReceivePayment } from '@/composables/useReceivePayment'
 import { usePdfStore } from '@/stores/pdf'
+import LoadingState from '@/components/LoadingState.vue'
 
 const { t } = useI18n()
 const auth = useAuthStore()
@@ -46,6 +47,7 @@ const editorOpen = ref(false)
 const confirmOpen = ref(false)
 const error = ref('')
 const confirming = ref(false)
+const loading = ref(true)
 
 const canDelete = computed(() => auth.can('invoices.delete') && invoiceCanDelete(invoice.value, true))
 const paid = computed(() => invoicePaidAmount(invoice.value))
@@ -80,8 +82,13 @@ function openApply() {
   apply({ type: 'invoice', id: invoice.value.id })
 }
 
-async function load() {
-  invoice.value = (await api.get(`/api/invoices/${route.params.id}`)).data
+async function load(quiet = false) {
+  if (!quiet) loading.value = true
+  try {
+    invoice.value = (await api.get(`/api/invoices/${route.params.id}`)).data
+  } finally {
+    if (!quiet) loading.value = false
+  }
 }
 
 async function exportDetail() {
@@ -127,7 +134,7 @@ async function remove() {
   }
 }
 
-onMounted(load)
+onMounted(() => { void load() })
 
 useStaffReload((e) => {
   const inv = invoice.value
@@ -135,11 +142,12 @@ useStaffReload((e) => {
   if (e.kind === 'order') return Number(e.order_id) === Number(inv.order_id)
   if (e.kind === 'client') return Number(e.client_id) === Number(inv.order?.client_id)
   return e.kind === 'conversation' && e.type === 'invoice' && Number(e.id) === Number(inv.id)
-}, load)
+}, () => load(true))
 </script>
 
 <template>
-  <div v-if="invoice" class="space-y-5">
+  <LoadingState v-if="loading && !invoice" />
+  <div v-else-if="invoice" class="space-y-5">
     <PageHeader :title="t('invoices.showTitle', { id: invoice.id })" :back-to="'/invoices'" :back-label="t('invoices.allInvoices')">
       <template #meta>
         <p class="mt-1 text-sm text-slate-500">

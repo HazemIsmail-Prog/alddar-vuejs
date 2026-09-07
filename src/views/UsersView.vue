@@ -17,6 +17,7 @@ import { Switch } from '@/components/ui/switch'
 import { useAuthStore } from '@/stores/auth'
 import StatusesPanel from '@/components/StatusesPanel.vue'
 import PageHeader from '@/components/PageHeader.vue'
+import LoadingState from '@/components/LoadingState.vue'
 
 type StaffTab = 'users' | 'roles' | 'permissions' | 'departments' | 'statuses'
 
@@ -46,6 +47,15 @@ function tabAllowed(id: StaffTab) {
 
 const tab = ref<StaffTab>(firstAllowedTab())
 const error = ref('')
+const loading = ref(true)
+
+const tabHasRows = computed(() => {
+  if (tab.value === 'users') return users.value.length > 0
+  if (tab.value === 'roles') return roles.value.length > 0
+  if (tab.value === 'permissions') return permissions.value.length > 0
+  if (tab.value === 'departments') return departments.value.length > 0
+  return true
+})
 
 const userOpen = ref(false)
 const roleOpen = ref(false)
@@ -158,17 +168,22 @@ const permissionGroups = computed(() => {
 })
 
 async function load() {
-  const tasks: Promise<void>[] = [api.get('/api/departments').then((r) => { departments.value = r.data })]
-  if (auth.can('users.view')) {
-    tasks.push(api.get('/api/users').then((r) => { users.value = r.data }))
+  loading.value = true
+  try {
+    const tasks: Promise<void>[] = [api.get('/api/departments').then((r) => { departments.value = r.data })]
+    if (auth.can('users.view')) {
+      tasks.push(api.get('/api/users').then((r) => { users.value = r.data }))
+    }
+    if (auth.canAny('users.view', 'roles.view')) {
+      tasks.push(api.get('/api/roles').then((r) => { roles.value = r.data }))
+    }
+    if (auth.canAny('users.view', 'roles.view', 'permissions.view')) {
+      tasks.push(api.get('/api/permissions').then((r) => { permissions.value = r.data }))
+    }
+    await Promise.all(tasks)
+  } finally {
+    loading.value = false
   }
-  if (auth.canAny('users.view', 'roles.view')) {
-    tasks.push(api.get('/api/roles').then((r) => { roles.value = r.data }))
-  }
-  if (auth.canAny('users.view', 'roles.view', 'permissions.view')) {
-    tasks.push(api.get('/api/permissions').then((r) => { permissions.value = r.data }))
-  }
-  await Promise.all(tasks)
 }
 
 function toggleId(list: number[], id: number) {
@@ -519,6 +534,9 @@ onMounted(() => {
       </button>
     </div>
 
+    <div class="relative">
+      <LoadingState v-if="loading && !tabHasRows" />
+      <template v-else>
     <div v-if="tab === 'users'" class="overflow-hidden rounded-xl border border-slate-200 bg-white">
       <table class="data-table">
         <thead>
@@ -622,6 +640,9 @@ onMounted(() => {
     </div>
 
     <StatusesPanel v-else-if="tab === 'statuses'" />
+      </template>
+      <LoadingState v-if="loading && tabHasRows" overlay />
+    </div>
 
     <FormDialog
       v-model:open="userOpen"

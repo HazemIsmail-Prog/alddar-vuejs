@@ -15,6 +15,7 @@ import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import PageHeader from '@/components/PageHeader.vue'
+import LoadingState from '@/components/LoadingState.vue'
 import ActionMenu from '@/components/ActionMenu.vue'
 import ConversationActions from '@/components/ConversationActions.vue'
 import { useAuthStore } from '@/stores/auth'
@@ -49,6 +50,7 @@ const stockWarehouseId = ref('')
 const stockSearch = ref('')
 const includeZero = ref(false)
 const error = ref('')
+const loading = ref(true)
 const itemOpen = ref(false)
 const warehouseOpen = ref(false)
 const receiptOpen = ref(false)
@@ -141,6 +143,15 @@ const filteredStock = computed(() => {
 const stockValue = computed(() =>
   filteredStock.value.reduce((sum, row) => sum + Number(row.value || 0), 0),
 )
+
+const tabHasRows = computed(() => {
+  if (tab.value === 'stock') return filteredStock.value.length > 0
+  if (tab.value === 'warehouses') return warehouses.value.length > 0
+  if (tab.value === 'items' || tab.value === 'services') return visibleItems.value.length > 0
+  if (tab.value === 'transfers') return transfers.value.length > 0
+  if (tab.value === 'adjustments') return adjustments.value.length > 0
+  return false
+})
 
 function warehouseSkuCount(warehouseId: number) {
   return stockLevels.value.filter((row) => row.warehouse_id === warehouseId && Number(row.qty) > 0).length
@@ -249,6 +260,8 @@ async function loadStock() {
 }
 
 async function load() {
+  loading.value = true
+  try {
   if (auth.can('items.view')) {
     items.value = (await api.get('/api/items')).data
     try {
@@ -286,9 +299,19 @@ async function load() {
     const list = detailKind.value === 'transfer' ? transfers.value : adjustments.value
     detail.value = list.find((row: any) => row.id === detail.value.id) ?? detail.value
   }
+  } finally {
+    loading.value = false
+  }
 }
 
-watch(includeZero, loadStock)
+watch(includeZero, async () => {
+  loading.value = true
+  try {
+    await loadStock()
+  } finally {
+    loading.value = false
+  }
+})
 
 function startWarehouse() {
   editingWarehouseId.value = null
@@ -674,6 +697,9 @@ onMounted(async () => {
       </button>
     </div>
 
+    <div class="relative">
+      <LoadingState v-if="loading && !tabHasRows" />
+      <template v-else>
     <div v-if="tab === 'stock'">
       <div class="mb-3 flex flex-wrap items-end gap-3">
         <Field :label="t('inventory.warehouse')">
@@ -894,6 +920,9 @@ onMounted(async () => {
           <tr v-if="!adjustments.length"><td colspan="6" class="text-slate-400">{{ t('inventory.emptyAdjustments') }}</td></tr>
         </tbody>
       </table>
+    </div>
+      </template>
+      <LoadingState v-if="loading && tabHasRows" overlay />
     </div>
 
     <FormDialog
