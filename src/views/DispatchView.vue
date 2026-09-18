@@ -19,7 +19,7 @@ import LoadingState from '@/components/LoadingState.vue'
 import ActionMenu from '@/components/ActionMenu.vue'
 import ConversationActions from '@/components/ConversationActions.vue'
 import OrderTimeline from '@/components/OrderTimeline.vue'
-import { personName, departmentName } from '@/i18n'
+import { personName, departmentName, named } from '@/i18n'
 import { useStatusStore } from '@/stores/statuses'
 import { useAuthStore } from '@/stores/auth'
 import { useInboxStore } from '@/stores/inbox'
@@ -299,6 +299,11 @@ function cardNotes(order: any) {
 
 function cardPhone(order: any) {
   return formatPhone(order.phone)
+}
+
+function cardContract(order: any) {
+  if (!order.contract) return ''
+  return `${t('orders.contract')}: ${named('contractType', order.contract.type)} #${order.contract.id}`
 }
 
 function dateKey(value?: string | null) {
@@ -755,6 +760,7 @@ watch(
                 <ActionMenu :items="cardActions(order)" :badge="orderUnread[order.id]" @select="onCardAction(order, $event)" />
               </div>
             </div>
+            <p v-if="cardContract(order)" class="mt-0.5 text-[11px] font-medium text-indigo-700 dark:text-indigo-300">{{ cardContract(order) }}</p>
             <p class="text-xs leading-relaxed break-words text-slate-600">{{ cardNote(order) }}</p>
             <p v-if="cardPhone(order)" class="mt-0.5 truncate text-xs tabular-nums text-slate-500">{{ cardPhone(order) }}</p>
             <p v-if="cardNotes(order)" class="mt-1 line-clamp-3 text-xs leading-relaxed break-words text-slate-600 dark:text-slate-300">{{ cardNotes(order) }}</p>
@@ -808,6 +814,7 @@ watch(
                       <ActionMenu :items="cardActions(order)" :badge="orderUnread[order.id]" @select="onCardAction(order, $event)" />
                     </div>
                   </div>
+                  <p v-if="cardContract(order)" class="mt-0.5 text-[11px] font-medium text-indigo-700 dark:text-indigo-300">{{ cardContract(order) }}</p>
                   <p class="text-xs leading-relaxed break-words text-slate-500">{{ cardNote(order) }}</p>
                   <p v-if="cardPhone(order)" class="mt-0.5 truncate text-xs tabular-nums text-slate-500">{{ cardPhone(order) }}</p>
                   <p v-if="cardNotes(order)" class="mt-1 line-clamp-3 text-xs leading-relaxed break-words text-slate-600 dark:text-slate-300">{{ cardNotes(order) }}</p>
