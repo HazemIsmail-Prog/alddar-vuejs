@@ -23,6 +23,7 @@ const props = withDefaults(defineProps<{
   hasContract?: boolean
   includesSpareParts?: boolean
   showPrice?: boolean
+  quantityReadonly?: boolean
   itemLabel?: (item: any) => string
 }>(), {
   machines: () => [],
@@ -30,6 +31,7 @@ const props = withDefaults(defineProps<{
   hasContract: false,
   includesSpareParts: false,
   showPrice: false,
+  quantityReadonly: false,
 })
 
 const { t } = useI18n()
@@ -137,7 +139,12 @@ function removeLine(index: number) {
           <option v-for="item in catalog" :key="item.id" :value="String(item.id)">{{ labelFor(item) }}</option>
         </select>
         <Input v-else v-model="line.description" :placeholder="t('tech.customItemPh')" />
-        <Input v-model="line.quantity" type="number" min="0.01" step="0.01" :title="t('common.qty')" />
+        <div
+          v-if="quantityReadonly"
+          class="flex h-9 items-center rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm tabular-nums text-slate-600 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-300"
+          :title="t('common.qty')"
+        >{{ line.quantity }}</div>
+        <Input v-else v-model="line.quantity" type="text" inputmode="decimal" :title="t('common.qty')" />
         <Input v-if="showPrice" v-model="line.unit_amount" type="number" min="0" step="1" :title="t('dispatch.unitPrice')" />
         <DeleteButton icon-only @click="removeLine(i)" />
       </div>

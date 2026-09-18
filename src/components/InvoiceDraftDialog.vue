@@ -167,6 +167,7 @@ async function remove() {
       :has-contract="!!order?.contract"
       :includes-spare-parts="!!order?.contract?.includes_spare_parts || order?.contract?.type === 'warranty'"
       :show-price="canPrice"
+      :quantity-readonly="canConfirm && !!invoice?.id"
     />
     <Field :label="t('invoices.report')">
       <textarea v-model="report" class="textarea min-h-28" :placeholder="t('tech.reportPh')" />
