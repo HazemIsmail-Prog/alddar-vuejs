@@ -7,6 +7,7 @@ import { ChevronsLeft, ChevronsRight, GripVertical } from '@lucide/vue'
 import api from '@/api/client'
 import { apiError, statusCardStyle } from '@/lib/utils'
 import { formatPhone } from '@/lib/phone'
+import { contractRef } from '@/lib/contract'
 import Field from '@/components/ui/Field.vue'
 import FormDialog from '@/components/FormDialog.vue'
 import InvoiceDraftDialog from '@/components/InvoiceDraftDialog.vue'
@@ -303,7 +304,7 @@ function cardPhone(order: any) {
 
 function cardContract(order: any) {
   if (!order.contract) return ''
-  return `${t('orders.contract')}: ${named('contractType', order.contract.type)} #${order.contract.id}`
+  return `${t('orders.contract')}: ${named('contractType', order.contract.type)} ${contractRef(order.contract)}`
 }
 
 function dateKey(value?: string | null) {

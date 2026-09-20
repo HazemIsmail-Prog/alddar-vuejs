@@ -57,7 +57,7 @@ function startEdit() {
 function exportDetail() {
   if (!detail.value) return
   pdf.openContractPicker({
-    title: t('pdf.contract', { id: detail.value.id }),
+    title: t('pdf.contract', { id: detail.value.reference_no || `#${detail.value.id}` }),
     filename: `contract-${detail.value.id}`,
     contract: detail.value,
   })
@@ -137,7 +137,7 @@ watch(() => modals.savedAt, () => {
     <RouterLink to="/contracts" class="ms-2 text-accent hover:underline">{{ t('contracts.allContracts') }}</RouterLink>
   </div>
   <div v-else-if="detail" class="space-y-6">
-    <PageHeader :title="t('contracts.detailsTitleId', { id: detail.id })" :back-to="'/contracts'" :back-label="t('contracts.allContracts')">
+    <PageHeader :title="t('contracts.detailsTitleId', { id: detail.reference_no || `#${detail.id}` })" :back-to="'/contracts'" :back-label="t('contracts.allContracts')">
       <template #meta>
         <div class="mt-2 flex flex-wrap items-center gap-2">
           <Badge variant="outline">{{ named('contractType', detail.type) }}</Badge>

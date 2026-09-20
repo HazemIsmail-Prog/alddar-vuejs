@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import DeleteButton from '@/components/DeleteButton.vue'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import CatalogCombobox from '@/components/CatalogCombobox.vue'
 import { machineLabel } from '@/lib/machines'
 import {
   blankInvoiceLine,
@@ -134,10 +135,15 @@ function removeLine(index: number) {
         >{{ t('tech.customItem') }}</button>
       </div>
       <div class="grid items-end gap-2 sm:grid-cols-[minmax(0,1fr)_5.5rem_auto]" :class="showPrice && 'sm:!grid-cols-[minmax(0,1fr)_5.5rem_5.5rem_auto]'">
-        <select v-if="!isCustomLine(line)" v-model="line.item_id" class="select" @change="onCatalogPick(line)">
-          <option value="">{{ t('common.item') }}</option>
-          <option v-for="item in catalog" :key="item.id" :value="String(item.id)">{{ labelFor(item) }}</option>
-        </select>
+        <CatalogCombobox
+          v-if="!isCustomLine(line)"
+          v-model="line.item_id"
+          :catalog="catalog"
+          :item-label="labelFor"
+          :placeholder="t('common.item')"
+          class="min-w-0"
+          @change="onCatalogPick(line)"
+        />
         <Input v-else v-model="line.description" :placeholder="t('tech.customItemPh')" />
         <div
           v-if="quantityReadonly"

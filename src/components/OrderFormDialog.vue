@@ -9,6 +9,7 @@ import Field from '@/components/ui/Field.vue'
 import FormDialog from '@/components/FormDialog.vue'
 import ClientPicker, { type ClientRecord } from '@/components/ClientPicker.vue'
 import { formatPhone } from '@/lib/phone'
+import { contractRef } from '@/lib/contract'
 import { useAuthStore } from '@/stores/auth'
 import { useModalsStore } from '@/stores/modals'
 
@@ -168,7 +169,7 @@ watch(
     <Field :label="t('orders.attachContract')">
       <select v-model="form.contract_id" class="select" :disabled="!form.location_id">
         <option value="">{{ t('orders.noBill') }}</option>
-        <option v-for="c in contracts" :key="c.id" :value="c.id">{{ named('contractType', c.type) }} #{{ c.id }}</option>
+        <option v-for="c in contracts" :key="c.id" :value="c.id">{{ named('contractType', c.type) }} {{ contractRef(c) }}</option>
       </select>
     </Field>
     <Field :label="t('contracts.plannedDate')">

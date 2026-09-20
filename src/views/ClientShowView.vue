@@ -7,6 +7,7 @@ import api from '@/api/client'
 import { apiError, fmtDate, remainingAmountClass } from '@/lib/utils'
 import { named, personName, departmentName } from '@/i18n'
 import { formatPhone } from '@/lib/phone'
+import { contractRef } from '@/lib/contract'
 import { machineLabel } from '@/lib/machines'
 import { dueTone, paymentMethodLabel } from '@/lib/payments'
 import { orderInvoices } from '@/lib/orderInvoices'
@@ -36,6 +37,21 @@ const client = ref<any>(null)
 const error = ref('')
 const loading = ref(true)
 const { payOpen, payMode, payPreset, openReceive, openApply, startCollect } = useReceivePayment()
+
+const contractNoById = computed(() => {
+  const map = new Map<number, string>()
+  for (const contract of client.value?.contracts || []) {
+    map.set(Number(contract.id), contractRef(contract))
+  }
+
+  return map
+})
+
+function contractDisplay(contractId?: number | string | null) {
+  if (contractId == null || contractId === '') return ''
+  const key = Number(contractId)
+  return contractNoById.value.get(key) || `#${key}`
+}
 
 async function load(quiet = false) {
   if (!quiet) {
@@ -100,7 +116,7 @@ const dues = computed<PaymentDue[]>(() => {
       type: 'installment' as const,
       id: row.id,
       remaining: Number(row.remaining),
-      label: `${t('clients.forInstallment')} #${row.contract_id}`,
+      label: `${t('clients.forInstallment')} ${contractDisplay(row.contract_id)}`,
     }))
   return [...invoices, ...installments]
 })
@@ -353,7 +369,7 @@ useStaffReload((e) => {
         </thead>
         <tbody>
           <tr v-for="row in client.contracts" :key="row.id">
-            <td class="font-medium" :data-label="t('orders.id')">#{{ row.id }}</td>
+            <td class="font-medium" :data-label="t('orders.id')">{{ contractRef(row) }}</td>
             <td :data-label="t('common.type')">{{ named('contractType', row.type) }}</td>
             <td :data-label="t('common.location')">{{ row.location?.label || t('common.dash') }}</td>
             <td :data-label="t('common.department')">{{ departmentName(row.department) }}</td>
@@ -480,8 +496,8 @@ useStaffReload((e) => {
         <tbody>
           <tr v-for="row in client.installments" :key="row.id" :class="dueTone(row, today) === 'overdue' && 'bg-amber-50/70 dark:bg-amber-950/20'">
             <td :data-label="t('nav.contracts')">
-              <RouterLink v-if="auth.can('contracts.view')" :to="`/contracts/${row.contract_id}`" class="text-accent hover:underline">#{{ row.contract_id }}</RouterLink>
-              <span v-else>#{{ row.contract_id }}</span>
+              <RouterLink v-if="auth.can('contracts.view')" :to="`/contracts/${row.contract_id}`" class="text-accent hover:underline">{{ contractDisplay(row.contract_id) }}</RouterLink>
+              <span v-else>{{ contractDisplay(row.contract_id) }}</span>
             </td>
             <td class="tabular-nums" :data-label="t('contracts.due')">
               {{ fmtDate(row.due_date) }}
@@ -541,7 +557,7 @@ useStaffReload((e) => {
                     :to="`/contracts/${alloc.contract_id}`"
                     class="text-accent hover:underline"
                   >
-                    {{ t('clients.forInstallment') }}
+                    {{ t('clients.forInstallment') }} {{ contractDisplay(alloc.contract_id) }}
                   </RouterLink>
                   <span v-else-if="alloc.installment_id">{{ t('clients.forInstallment') }}</span>
                   <span v-else>{{ t('clients.asCredit') }}</span>

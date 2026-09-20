@@ -1,4 +1,5 @@
 import { formatPhone } from '@/lib/phone'
+import { contractRef } from '@/lib/contract'
 
 function fmtDate(value?: string | null) {
   if (!value) return ''
@@ -17,7 +18,7 @@ export function toLetterheadContract(contract: any) {
       name: contract?.client?.name || '',
       phones,
     },
-    referenceable_number: contract?.id ?? '',
+    referenceable_number: contractRef(contract),
     formatted_contract_start_date: fmtDate(contract?.start_date),
     formatted_contract_end_date: fmtDate(contract?.end_date),
     formatted_compressor_warranty_start_date: fmtDate(contract?.compressor_warranty_start),

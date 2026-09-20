@@ -7,6 +7,7 @@ import api from '@/api/client'
 import { apiError, fmtDate, remainingAmountClass } from '@/lib/utils'
 import { named, personName, departmentName } from '@/i18n'
 import { formatPhone, phoneDigits } from '@/lib/phone'
+import { contractRef } from '@/lib/contract'
 import { machineLabel } from '@/lib/machines'
 import { invoicePaidAmount, invoiceRemaining, orderDraftInvoice, orderInvoices } from '@/lib/orderInvoices'
 import StatusBadge from '@/components/StatusBadge.vue'
@@ -259,9 +260,9 @@ useStaffReload((e) => {
                 :to="`/contracts/${order.contract.id}`"
                 class="text-accent hover:underline"
               >
-                {{ named('contractType', order.contract.type) }} #{{ order.contract.id }}
+                {{ named('contractType', order.contract.type) }} {{ contractRef(order.contract) }}
               </RouterLink>
-              <span v-else>{{ named('contractType', order.contract.type) }} #{{ order.contract.id }}</span>
+              <span v-else>{{ named('contractType', order.contract.type) }} {{ contractRef(order.contract) }}</span>
             </dd>
           </div>
           <div>

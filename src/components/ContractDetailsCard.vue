@@ -4,6 +4,7 @@ import { RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { named, personName, departmentName } from '@/i18n'
 import { formatPhone } from '@/lib/phone'
+import { contractRef } from '@/lib/contract'
 import { cn, fmtDate } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import NetDueMark from '@/components/NetDueMark.vue'
@@ -37,7 +38,7 @@ const netDue = computed(() => Number(props.contract.net_due || 0))
 <template>
   <article :class="cn('panel p-5', props.class)">
     <div class="mb-4 flex items-start justify-between gap-3">
-      <p class="text-sm font-semibold">#{{ contract.id }}</p>
+      <p class="text-sm font-semibold">{{ contractRef(contract) }}</p>
       <div class="flex shrink-0 flex-wrap items-center justify-end gap-2" @click.stop>
         <Badge variant="outline">{{ named('contractType', contract.type) }}</Badge>
         <Badge variant="secondary" :class="statusBadgeClass(contract.status)">{{ named('contractStatus', contract.status) }}</Badge>

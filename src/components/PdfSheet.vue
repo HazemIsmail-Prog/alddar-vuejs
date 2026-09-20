@@ -4,6 +4,7 @@ import { storeToRefs } from 'pinia'
 import { useI18n } from 'vue-i18n'
 import { named, personName } from '@/i18n'
 import { fmtDate } from '@/lib/utils'
+import { contractRef } from '@/lib/contract'
 import { machineLabel } from '@/lib/machines'
 import { paymentMethodLabel } from '@/lib/payments'
 import { invoicePaidAmount, invoiceRemaining } from '@/lib/orderInvoices'
@@ -281,7 +282,7 @@ const client = computed(() => data.value.client || invoice.value.order?.client |
           </thead>
           <tbody>
             <tr v-for="row in data.rows || []" :key="row.id">
-              <td>{{ row.id }}</td>
+              <td>{{ contractRef(row) }}</td>
               <td>{{ row.client?.name || t('common.dash') }}</td>
               <td>{{ row.location?.label || t('common.dash') }}</td>
               <td>{{ named('contractType', row.type) }}</td>

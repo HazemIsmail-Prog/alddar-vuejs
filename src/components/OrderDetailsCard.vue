@@ -4,6 +4,7 @@ import { RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { named, personName, departmentName } from '@/i18n'
 import { formatPhone } from '@/lib/phone'
+import { contractRef } from '@/lib/contract'
 import { cn } from '@/lib/utils'
 import StatusBadge from '@/components/StatusBadge.vue'
 import NetDueMark from '@/components/NetDueMark.vue'
@@ -81,9 +82,9 @@ const netDue = computed(() => Number(props.order.net_due || 0))
             class="text-accent hover:underline"
             @click.stop
           >
-            {{ named('contractType', order.contract.type) }} #{{ order.contract.id }}
+            {{ named('contractType', order.contract.type) }} {{ contractRef(order.contract) }}
           </RouterLink>
-          <span v-else>{{ named('contractType', order.contract.type) }} #{{ order.contract.id }}</span>
+          <span v-else>{{ named('contractType', order.contract.type) }} {{ contractRef(order.contract) }}</span>
         </dd>
       </div>
       <div v-if="order.creator">

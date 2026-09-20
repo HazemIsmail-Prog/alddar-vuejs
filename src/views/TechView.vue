@@ -18,6 +18,7 @@ import { apiError } from '@/lib/utils'
 import { machineLabel } from '@/lib/machines'
 import { invoiceLinesPayload, linesFromInvoice, type InvoiceEditLine } from '@/lib/invoiceLines'
 import { formatPhone, phoneDigits } from '@/lib/phone'
+import { contractRef } from '@/lib/contract'
 import { Button } from '@/components/ui/button'
 import DeleteButton from '@/components/DeleteButton.vue'
 import Field from '@/components/ui/Field.vue'
@@ -471,7 +472,7 @@ useStaffReload((e) => {
             <p v-if="job.department || job.contract" class="mt-1 text-xs text-slate-500">
               <span v-if="job.department">{{ departmentName(job.department) }}</span>
               <span v-if="job.department && job.contract"> · </span>
-              <span v-if="job.contract">{{ t('tech.contract') }} {{ named('contractType', job.contract.type) }} #{{ job.contract.id }}</span>
+              <span v-if="job.contract">{{ t('tech.contract') }} {{ named('contractType', job.contract.type) }} {{ contractRef(job.contract) }}</span>
             </p>
           </template>
           <p v-else class="mt-1 text-sm text-slate-500">{{ t('tech.acceptToSee') }}</p>

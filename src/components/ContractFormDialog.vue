@@ -4,6 +4,7 @@ import { Plus, Check } from '@lucide/vue'
 import { useI18n } from 'vue-i18n'
 import api from '@/api/client'
 import { apiError } from '@/lib/utils'
+import { contractRef } from '@/lib/contract'
 import { named, departmentName } from '@/i18n'
 import { Button } from '@/components/ui/button'
 import DeleteButton from '@/components/DeleteButton.vue'
@@ -21,6 +22,7 @@ const selectedClient = ref<ClientRecord | null>(null)
 const clientLocked = ref(false)
 const departments = ref<any[]>([])
 const editingId = ref<number | null>(null)
+const editingLabel = ref('')
 const financeLocked = ref(false)
 const error = ref('')
 const saving = ref(false)
@@ -141,6 +143,7 @@ async function startEdit(row: any) {
   selectedClient.value = client
   clientLocked.value = false
   editingId.value = contract.id
+  editingLabel.value = contractRef(contract)
   financeLocked.value = (contract.installments || []).some(
     (i: any) => i.status !== 'pending' || i.payments?.length,
   )
@@ -431,7 +434,7 @@ watch(
 <template>
   <FormDialog
     v-model:open="open"
-    :title="editingId ? t('contracts.editTitle', { id: editingId }) : t('contracts.createTitle')"
+    :title="editingId ? t('contracts.editTitle', { id: editingLabel }) : t('contracts.createTitle')"
     :description="wizardSteps[step - 1]?.hint"
     wide
     :error="error"
