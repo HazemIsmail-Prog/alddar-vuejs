@@ -610,6 +610,7 @@ export default {
     searchPh: 'ابحث بالعميل أو الموقع',
     groupContract: 'العقد',
     numberPh: 'رقم العقد',
+    referenceNoPh: 'مثال: AC 109',
     createTitle: 'عقد جديد',
     createDesc: 'ابحث عن العميل بالاسم أو الهاتف. حدد تواريخ الدفعات والصيانات الوقائية بنفسك. قيمة الكفالة ثابتة على 0.',
     createSubmit: 'إنشاء العقد',

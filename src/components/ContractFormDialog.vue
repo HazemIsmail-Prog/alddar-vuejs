@@ -74,6 +74,7 @@ function blankForm() {
     client_id: '' as number | '',
     location_id: '',
     department_id: '',
+    reference_no: '',
     type: 'annual',
     includes_spare_parts: false,
     includes_compressor_warranty: false,
@@ -152,6 +153,7 @@ async function startEdit(row: any) {
     client_id: contract.client_id,
     location_id: String(contract.location_id),
     department_id: String(contract.department_id),
+    reference_no: contract.reference_no || '',
     type: contract.type,
     includes_spare_parts: contract.type === 'warranty' ? true : !!contract.includes_spare_parts,
     includes_compressor_warranty: !!contract.includes_compressor_warranty,
@@ -361,6 +363,7 @@ function payload() {
     client_id: Number(form.value.client_id),
     location_id: Number(form.value.location_id),
     department_id: Number(form.value.department_id),
+    reference_no: String(form.value.reference_no).trim() || null,
     type: form.value.type,
     status: form.value.status,
     includes_spare_parts: form.value.type === 'warranty' ? true : form.value.includes_spare_parts,
@@ -501,6 +504,10 @@ watch(
               <option v-for="d in departments" :key="d.id" :value="d.id">{{ departmentName(d) }}</option>
             </select>
           </Field>
+          <div class="field sm:col-span-2">
+            <span>{{ t('contracts.numberPh') }}</span>
+            <Input v-model="form.reference_no" type="text" :placeholder="t('contracts.referenceNoPh')" />
+          </div>
         </div>
       </section>
       <section class="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700">

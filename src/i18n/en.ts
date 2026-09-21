@@ -610,6 +610,7 @@ export default {
     searchPh: 'Search client or location',
     groupContract: 'Contract',
     numberPh: 'Contract number',
+    referenceNoPh: 'e.g. AC 109',
     createTitle: 'New contract',
     createDesc: 'Search the client by name or phone. Set installment due dates and visit dates yourself. Warranty value is locked at 0.',
     createSubmit: 'Create contract',
