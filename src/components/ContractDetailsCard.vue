@@ -64,7 +64,7 @@ const netDue = computed(() => Number(props.contract.net_due || 0))
             {{ contract.client?.name }}
           </RouterLink>
           <span v-else>{{ contract.client?.name || t('common.dash') }}</span>
-          <p v-if="phones" class="mt-0.5 text-sm text-slate-500">{{ phones }}</p>
+          <p v-if="phones" dir="ltr" class="phone-num mt-0.5 text-sm text-slate-500">{{ phones }}</p>
         </dd>
       </div>
       <div>

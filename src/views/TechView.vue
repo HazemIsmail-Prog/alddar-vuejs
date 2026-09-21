@@ -525,7 +525,7 @@ useStaffReload((e) => {
         <section v-if="!jobLocked && contactPhone && phoneDigits(contactPhone)">
           <p class="mb-2 text-[11px] font-medium uppercase tracking-[0.12em] text-slate-400">{{ t('tech.contact') }}</p>
           <div class="flex items-center justify-between gap-3 rounded-lg border border-slate-200 px-3 py-2.5 dark:border-slate-700">
-            <p class="min-w-0 truncate text-sm font-medium tabular-nums">{{ formatPhone(contactPhone) }}</p>
+            <p dir="ltr" class="phone-num min-w-0 truncate text-sm font-medium tabular-nums">{{ formatPhone(contactPhone) }}</p>
             <PhoneActions :phone="contactPhone" icon-class="size-4" gap-class="gap-2" />
           </div>
         </section>

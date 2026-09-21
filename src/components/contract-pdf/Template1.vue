@@ -291,7 +291,7 @@ onMounted(prepare)
                 </tr>
                 <tr>
                     <th>التليفون:</th>
-                    <td>{{ phones }}</td>
+                    <td dir="ltr" class="phone-num">{{ phones }}</td>
                 </tr>
                 <tr><th colspan="2">تمهيد</th></tr>
                 <tr>

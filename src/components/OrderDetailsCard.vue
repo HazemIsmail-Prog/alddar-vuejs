@@ -63,7 +63,7 @@ const netDue = computed(() => Number(props.order.net_due || 0))
       </div>
       <div>
         <dt>{{ t('orders.contactPhone') }}</dt>
-        <dd>{{ formatPhone(order.phone) || t('common.dash') }}</dd>
+        <dd dir="ltr" class="phone-num">{{ formatPhone(order.phone) || t('common.dash') }}</dd>
       </div>
       <div>
         <dt>{{ t('orders.assignedTo') }}</dt>

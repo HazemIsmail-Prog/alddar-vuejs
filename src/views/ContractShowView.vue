@@ -191,7 +191,7 @@ watch(() => modals.savedAt, () => {
               <ul v-else class="space-y-2">
                 <li v-for="phone in phones" :key="phone.id" class="flex items-center justify-between gap-3">
                   <div class="min-w-0">
-                    <p class="tabular-nums">{{ formatPhone(phone) }}</p>
+                    <p dir="ltr" class="phone-num tabular-nums">{{ formatPhone(phone) }}</p>
                     <Badge v-if="phone.is_primary" variant="secondary" class="mt-1">{{ t('clients.primary') }}</Badge>
                   </div>
                     <PhoneActions :phone="phone" />

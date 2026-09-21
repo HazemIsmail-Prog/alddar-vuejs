@@ -43,7 +43,7 @@ const netDue = computed(() => Number(props.client.net_due || 0))
         <dt class="text-[0.7rem] font-medium tracking-wider text-slate-500 uppercase">{{ t('clients.phone') }}</dt>
         <dd class="mt-0.5 ms-0 text-sm">
           <p v-if="!phones.length">{{ t('common.dash') }}</p>
-          <p v-for="(phone, idx) in phones" :key="idx">{{ phone }}</p>
+          <p v-for="(phone, idx) in phones" :key="idx" dir="ltr" class="phone-num">{{ phone }}</p>
         </dd>
       </div>
       <div class="min-w-0">

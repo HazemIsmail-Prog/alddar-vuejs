@@ -763,7 +763,7 @@ watch(
             </div>
             <p v-if="cardContract(order)" class="mt-0.5 text-[11px] font-medium text-indigo-700 dark:text-indigo-300">{{ cardContract(order) }}</p>
             <p class="text-xs leading-relaxed break-words text-slate-600">{{ cardNote(order) }}</p>
-            <p v-if="cardPhone(order)" class="mt-0.5 truncate text-xs tabular-nums text-slate-500">{{ cardPhone(order) }}</p>
+            <p v-if="cardPhone(order)" dir="ltr" class="phone-num mt-0.5 truncate text-xs tabular-nums text-slate-500">{{ cardPhone(order) }}</p>
             <p v-if="cardNotes(order)" class="mt-1 line-clamp-3 text-xs leading-relaxed break-words text-slate-600 dark:text-slate-300">{{ cardNotes(order) }}</p>
             <p v-if="isFutureOrder(order)" class="mt-0.5 text-[11px] text-slate-400">{{ t('dispatch.later', { date: fmtPlanDate(order.planned_date) }) }}</p>
             <p class="mt-1 text-[11px] font-medium tracking-wide text-teal-800 uppercase">{{ t('dispatch.onJob') }}</p>
@@ -817,7 +817,7 @@ watch(
                   </div>
                   <p v-if="cardContract(order)" class="mt-0.5 text-[11px] font-medium text-indigo-700 dark:text-indigo-300">{{ cardContract(order) }}</p>
                   <p class="text-xs leading-relaxed break-words text-slate-500">{{ cardNote(order) }}</p>
-                  <p v-if="cardPhone(order)" class="mt-0.5 truncate text-xs tabular-nums text-slate-500">{{ cardPhone(order) }}</p>
+                  <p v-if="cardPhone(order)" dir="ltr" class="phone-num mt-0.5 truncate text-xs tabular-nums text-slate-500">{{ cardPhone(order) }}</p>
                   <p v-if="cardNotes(order)" class="mt-1 line-clamp-3 text-xs leading-relaxed break-words text-slate-600 dark:text-slate-300">{{ cardNotes(order) }}</p>
                   <p v-if="isFutureOrder(order)" class="mt-0.5 text-[11px] text-slate-400">{{ t('dispatch.later', { date: fmtPlanDate(order.planned_date) }) }}</p>
                   <p v-if="order.status === 'on_hold' && holdReason(order)" class="mt-1 text-xs text-amber-800">{{ holdReason(order) }}</p>

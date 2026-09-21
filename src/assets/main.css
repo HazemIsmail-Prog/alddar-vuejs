@@ -693,3 +693,16 @@ html.dark .dialog-overlay {
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
+
+.phone-num {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+html[dir='ltr'] .phone-num {
+  text-align: left;
+}
+
+html[dir='rtl'] .phone-num {
+  text-align: right;
+}

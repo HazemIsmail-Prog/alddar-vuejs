@@ -238,10 +238,10 @@ useStaffReload((e) => {
             <dt>{{ t('orders.contactPhone') }}</dt>
             <dd>
               <div v-if="order.phone && phoneDigits(order.phone)" class="flex items-center justify-between gap-3">
-                <p class="tabular-nums">{{ formatPhone(order.phone) }}</p>
+                <p dir="ltr" class="phone-num tabular-nums">{{ formatPhone(order.phone) }}</p>
                 <PhoneActions :phone="order.phone" />
               </div>
-              <span v-else>{{ formatPhone(order.phone) || t('common.dash') }}</span>
+              <span v-else dir="ltr" class="phone-num">{{ formatPhone(order.phone) || t('common.dash') }}</span>
             </dd>
           </div>
           <div>

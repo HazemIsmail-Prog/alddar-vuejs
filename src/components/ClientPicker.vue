@@ -224,7 +224,10 @@ watch(
             @click="pick(c)"
           >
             <span class="font-medium">{{ c.name }}</span>
-            <span class="text-xs text-slate-500">{{ phone(c) || t('picker.noPhone') }} · {{ locationHint(c) || t('picker.noLocation') }}</span>
+            <span v-if="phone(c)" dir="ltr" class="phone-num text-xs text-slate-500">{{ phone(c) }}</span>
+            <span v-else class="text-xs text-slate-500">{{ t('picker.noPhone') }}</span>
+            <span v-if="phone(c)" class="text-xs text-slate-500"> · </span>
+            <span class="text-xs text-slate-500">{{ locationHint(c) || t('picker.noLocation') }}</span>
           </button>
         </li>
       </ul>
@@ -241,7 +244,7 @@ watch(
         <div v-else class="grid max-h-80 gap-2 overflow-y-auto p-1">
           <p class="text-xs font-medium text-slate-600">{{ t('picker.newClient') }}</p>
           <Input v-model="createForm.name" :placeholder="t('picker.name')" />
-          <div class="flex gap-2">
+          <div dir="ltr" class="flex gap-2">
             <Input v-model="createForm.country_code" class="w-20" placeholder="+965" />
             <Input v-model="createForm.phone" :placeholder="t('picker.phone')" />
           </div>

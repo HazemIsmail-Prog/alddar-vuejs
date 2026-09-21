@@ -151,7 +151,7 @@ watch(
     <Field :label="t('orders.contactPhone')">
       <select v-model="form.phone_id" class="select" required :disabled="!selectedClient">
         <option value="">{{ selectedClient ? (phones.length ? t('orders.selectPhone') : t('orders.noPhones')) : t('orders.selectClientFirst') }}</option>
-        <option v-for="p in phones" :key="p.id" :value="String(p.id)">{{ formatPhone(p) }}</option>
+        <option v-for="p in phones" :key="p.id" :value="String(p.id)" dir="ltr" class="phone-num">{{ formatPhone(p) }}</option>
       </select>
     </Field>
     <Field :label="t('common.location')">

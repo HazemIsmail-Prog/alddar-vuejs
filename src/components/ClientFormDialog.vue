@@ -436,6 +436,7 @@ watch(
         <div
           v-for="p in editing.phones"
           :key="p.id"
+          dir="ltr"
           class="flex items-center gap-2 border-t border-slate-100 px-3 py-2 dark:border-slate-800"
         >
           <Input v-model="p.country_code" class="w-20 shrink-0" placeholder="+965" />
@@ -443,7 +444,7 @@ watch(
           <Button v-if="auth.can('clients.update')" type="button" size="sm" variant="outline" :loading="busyKey === `phone:${p.id}`" @click="savePhone(p)">{{ t('common.save') }}</Button>
           <DeleteButton v-if="auth.can('clients.update')" icon-only :loading="busyKey === `phone-del:${p.id}`" @click="deletePhone(p)" />
         </div>
-        <div class="flex items-center gap-2 border-t border-slate-100 px-3 py-2 dark:border-slate-800">
+        <div dir="ltr" class="flex items-center gap-2 border-t border-slate-100 px-3 py-2 dark:border-slate-800">
           <Input v-model="newPhone.country_code" class="w-20 shrink-0" placeholder="+965" />
           <Input v-model="newPhone.phone" class="flex-1" :placeholder="t('clients.newPhone')" />
           <Button v-if="canWrite" type="button" size="sm" variant="outline" :loading="busyKey === 'phone:add'" @click="addPhone">
