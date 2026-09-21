@@ -4,7 +4,7 @@ import { RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { named, personName, departmentName } from '@/i18n'
 import { formatPhone } from '@/lib/phone'
-import { contractRef } from '@/lib/contract'
+import { contractRef, daysUntilEnd } from '@/lib/contract'
 import { cn, fmtDate } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import NetDueMark from '@/components/NetDueMark.vue'
@@ -33,6 +33,12 @@ function statusBadgeClass(status?: string) {
 }
 
 const netDue = computed(() => Number(props.contract.net_due || 0))
+
+const endsSoon = computed(() => {
+  if (props.contract.status !== 'active') return null
+  const days = daysUntilEnd(props.contract)
+  return days != null && days <= 30 ? days : null
+})
 </script>
 
 <template>
@@ -42,6 +48,11 @@ const netDue = computed(() => Number(props.contract.net_due || 0))
       <div class="flex shrink-0 flex-wrap items-center justify-end gap-2" @click.stop>
         <Badge variant="outline">{{ named('contractType', contract.type) }}</Badge>
         <Badge variant="secondary" :class="statusBadgeClass(contract.status)">{{ named('contractStatus', contract.status) }}</Badge>
+        <Badge
+          v-if="endsSoon != null"
+          variant="outline"
+          class="border-transparent bg-amber-100 tabular-nums text-amber-800 dark:bg-amber-950/60 dark:text-amber-200"
+        >{{ endsSoon }} {{ t('contracts.daysLeft') }}</Badge>
         <slot name="actions" />
       </div>
     </div>

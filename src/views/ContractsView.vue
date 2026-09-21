@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import PageHeader from '@/components/PageHeader.vue'
+import PageTabs from '@/components/PageTabs.vue'
 import EmptyState from '@/components/EmptyState.vue'
 import LoadingState from '@/components/LoadingState.vue'
 import ActionMenu from '@/components/ActionMenu.vue'
@@ -57,11 +58,16 @@ const filters = ref(emptyFilters())
 const loading = ref(true)
 const threadId = ref<number | null>(null)
 const threadHost = ref<{ openComments: () => void; openFiles: () => void } | null>(null)
+const tab = ref<'warranty' | 'annual'>('warranty')
 
-const typeOptions = computed(() => [
-  { value: 'annual', label: t('contractType.annual') },
-  { value: 'warranty', label: t('contractType.warranty') },
+const tabs = computed(() => [
+  { id: 'warranty', label: t('contracts.warranty') },
+  { id: 'annual', label: t('contracts.annual') },
 ])
+
+watch(tab, (value) => {
+  filters.value.types = [value]
+})
 
 const statusOptions = computed(() => [
   { value: 'active', label: t('contractStatus.active') },
@@ -85,7 +91,6 @@ const hasFilters = computed(() => {
     f.number
     || f.client_name
     || f.location
-    || f.types.length
     || f.statuses.length
     || f.department_id.length
     || f.start_from
@@ -135,7 +140,7 @@ watch(() => modals.savedAt, () => {
 })
 
 function clearFilters() {
-  filters.value = emptyFilters()
+  filters.value = { ...emptyFilters(), types: [tab.value] }
 }
 
 function openRow(row: any) {
@@ -223,6 +228,8 @@ onMounted(async () => {
       </template>
     </PageHeader>
 
+    <PageTabs v-model="tab" :tabs="tabs" class="mb-4" />
+
     <Card class="mb-4 p-3">
       <div class="flex flex-wrap items-start gap-x-6 gap-y-3">
         <FilterGroup :label="t('common.client')">
@@ -233,7 +240,6 @@ onMounted(async () => {
         </FilterGroup>
         <FilterGroup :label="t('contracts.groupContract')">
           <Input v-model="filters.number" class="h-8 w-28" :placeholder="t('contracts.numberPh')" inputmode="numeric" />
-          <FilterMulti v-model="filters.types" :label="t('common.type')" :options="typeOptions" />
           <FilterMulti v-model="filters.statuses" :label="t('common.status')" :options="statusOptions" />
           <FilterMulti v-model="filters.department_id" :label="t('common.department')" :options="departmentOptions" />
         </FilterGroup>

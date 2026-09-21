@@ -7,6 +7,7 @@ import api from '@/api/client'
 import { apiError, fmtDate, remainingAmountClass } from '@/lib/utils'
 import { named, personName, departmentName } from '@/i18n'
 import { formatPhone } from '@/lib/phone'
+import { daysUntilEnd } from '@/lib/contract'
 import { dueTone, paymentMethodLabel } from '@/lib/payments'
 import { orderInvoices } from '@/lib/orderInvoices'
 import { Button } from '@/components/ui/button'
@@ -86,6 +87,12 @@ const today = computed(() => {
   return `${d.getFullYear()}-${mm}-${dd}`
 })
 
+const endsSoon = computed(() => {
+  if (detail.value?.status !== 'active') return null
+  const days = daysUntilEnd(detail.value)
+  return days != null && days <= 30 ? days : null
+})
+
 const phones = computed(() =>
   [...(detail.value?.client?.phones || [])].sort((a: any, b: any) => Number(b.is_primary) - Number(a.is_primary)),
 )
@@ -149,6 +156,11 @@ watch(() => modals.savedAt, () => {
                 ? 'border-transparent bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-200'
                 : ''"
           >{{ named('contractStatus', detail.status) }}</Badge>
+          <Badge
+            v-if="endsSoon != null"
+            variant="outline"
+            class="border-transparent bg-amber-100 tabular-nums text-amber-800 dark:bg-amber-950/60 dark:text-amber-200"
+          >{{ endsSoon }} {{ t('contracts.daysLeft') }}</Badge>
           <span class="text-sm text-slate-500">{{ detail.client?.name }}</span>
         </div>
       </template>

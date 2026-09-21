@@ -7,7 +7,7 @@ import api from '@/api/client'
 import { apiError, fmtDate, remainingAmountClass } from '@/lib/utils'
 import { named, personName, departmentName } from '@/i18n'
 import { formatPhone } from '@/lib/phone'
-import { contractRef } from '@/lib/contract'
+import { contractRef, daysUntilEnd } from '@/lib/contract'
 import { machineLabel } from '@/lib/machines'
 import { dueTone, paymentMethodLabel } from '@/lib/payments'
 import { orderInvoices } from '@/lib/orderInvoices'
@@ -100,6 +100,19 @@ const wallet = computed(() => Number(totals.value.wallet || 0))
 const netDue = computed(() => Number(totals.value.net_due || 0))
 const outstanding = computed(() => Number(totals.value.outstanding || 0))
 
+const activeContracts = computed(() => (client.value?.contracts || []).filter((c: any) => c.status === 'active'))
+const hasValidContract = computed(() => activeContracts.value.length > 0)
+
+const soonestEnd = computed(() => {
+  let min: number | null = null
+  for (const c of activeContracts.value) {
+    const days = daysUntilEnd(c)
+    if (days != null && (min == null || days < min)) min = days
+  }
+
+  return min
+})
+
 const dues = computed<PaymentDue[]>(() => {
   if (!client.value) return []
   const invoices = (client.value.invoices || [])
@@ -190,6 +203,18 @@ useStaffReload((e) => {
           {{ t('clients.sitesCount', { sites: totals.locations || 0, machines: totals.machines || 0 }) }}
           <span v-if="phones.length"> · {{ phones.length }} {{ t('clients.phones') }}</span>
         </p>
+        <div class="mt-2 flex flex-wrap items-center gap-2">
+          <Badge
+            v-if="hasValidContract"
+            variant="outline"
+            class="border-transparent bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-200"
+          >{{ t('clients.hasValidContract') }}</Badge>
+          <Badge
+            v-if="soonestEnd != null && soonestEnd <= 30"
+            variant="outline"
+            class="border-transparent bg-amber-100 tabular-nums text-amber-800 dark:bg-amber-950/60 dark:text-amber-200"
+          >{{ soonestEnd }} {{ t('contracts.daysLeft') }}</Badge>
+        </div>
       </template>
       <template #actions>
         <Button v-if="auth.can('orders.create')" variant="outline" @click="startOrder">
