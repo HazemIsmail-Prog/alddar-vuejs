@@ -614,6 +614,8 @@ export default {
     numberPh: 'رقم العقد',
     referenceNoPh: 'مثال: AC 109',
     daysLeft: 'يوم متبقى',
+    expiring: 'تنتهي قريباً',
+    expiringDays: 'خلال {n} يوماً',
     createTitle: 'عقد جديد',
     createDesc: 'ابحث عن العميل بالاسم أو الهاتف. حدد تواريخ الدفعات والصيانات الوقائية بنفسك. قيمة الكفالة ثابتة على 0.',
     createSubmit: 'إنشاء العقد',

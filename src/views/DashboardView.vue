@@ -51,7 +51,7 @@ type Dash = {
     }[]
   }
   clients: null | { total: number; new_month: number; locations: number; machines: number }
-  contracts: null | { total: number; active: number; expiring_30: number; value: number; overdue_installments: number; installment_outstanding: number }
+  contracts: null | { total: number; active: number; expiring_30: number; value: number; total_value: number; overdue_installments: number; installment_outstanding: number }
   invoices: null | { draft: number; confirmed: number; outstanding: number; collected_month: number; recent: { id: number; status: string; total: number; client: string | null }[] }
   inventory: null | { warehouses: number; skus_on_hand: number; out_of_stock: number; in_transit: number; draft_transfers: number; draft_adjustments: number; on_hand_value: number | null; own_only: boolean }
   accounting: null | { cash: number; ar: number; inventory: number; in_transit: number; unearned: number; revenue: number; cogs: number; client_credit?: number }
@@ -407,7 +407,7 @@ const kpis = computed(() => {
               <p class="text-xs text-slate-500">{{ t('dashboard.active') }} / {{ data.contracts.total }}</p>
             </div>
             <div>
-              <p class="text-xl font-semibold">{{ money(data.contracts.value) }}</p>
+              <p class="text-xl font-semibold">{{ money(data.contracts.total_value) }}</p>
               <p class="text-xs text-slate-500">{{ t('contracts.value') }}</p>
             </div>
             <div :class="data.contracts.overdue_installments > 0 && 'text-amber-800 dark:text-amber-200'">

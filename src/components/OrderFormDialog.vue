@@ -54,19 +54,19 @@ async function ensureDepartments() {
   departments.value = (await api.get('/api/departments', { params: { is_service: 1 } })).data
 }
 
-function onClient(client: ClientRecord | null) {
+function onClient(client: ClientRecord | null, autoLocation = true) {
   selectedClient.value = client
   form.value.location_id = ''
   form.value.contract_id = ''
   form.value.phone_id = defaultPhoneId(client)
   contracts.value = []
-  if (client?.locations?.length === 1 && client.locations[0]) {
+  if (autoLocation && client?.locations?.length === 1 && client.locations[0]) {
     form.value.location_id = String(client.locations[0].id)
     void onLocation()
   }
 }
 
-async function onLocation() {
+async function onLocation(contractId?: number | null) {
   if (!form.value.location_id) {
     contracts.value = []
     return
@@ -81,18 +81,29 @@ async function onLocation() {
   } catch {
     contracts.value = []
   }
+  if (contractId && contracts.value.some((c) => c.id === contractId)) {
+    form.value.contract_id = String(contractId)
+  }
 }
 
-function start(client?: ClientRecord | null) {
+async function start(client?: ClientRecord | null) {
   error.value = ''
   form.value = blankForm()
   selectedClient.value = null
   contracts.value = []
   void ensureDepartments()
+  const { contractId, locationId, departmentId } = modals.orderForm
   if (client) {
     form.value.client_id = client.id
-    onClient(client)
+    onClient(client, !locationId)
   }
+  if (departmentId) {
+    form.value.department_id = String(departmentId)
+  }
+
+  if (!client || !locationId) return
+  form.value.location_id = String(locationId)
+  await onLocation(contractId)
 }
 
 async function create() {
@@ -126,7 +137,7 @@ watch(
   () => [modals.orderForm.token, modals.orderForm.open] as const,
   ([token, isOpen]) => {
     if (!isOpen || !token) return
-    start(modals.orderForm.client)
+    void start(modals.orderForm.client)
   },
 )
 </script>
@@ -155,7 +166,7 @@ watch(
       </select>
     </Field>
     <Field :label="t('common.location')">
-      <select v-model="form.location_id" class="select" required :disabled="!selectedClient" @change="onLocation">
+      <select v-model="form.location_id" class="select" required :disabled="!selectedClient" @change="onLocation()">
         <option value="">{{ selectedClient ? t('orders.selectLocation') : t('orders.selectClientFirst') }}</option>
         <option v-for="l in locations" :key="l.id" :value="l.id">{{ l.label }} — {{ l.address }}</option>
       </select>

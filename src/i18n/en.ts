@@ -614,6 +614,8 @@ export default {
     numberPh: 'Contract number',
     referenceNoPh: 'e.g. AC 109',
     daysLeft: 'days left',
+    expiring: 'Ending soon',
+    expiringDays: 'Within {n} days',
     createTitle: 'New contract',
     createDesc: 'Search the client by name or phone. Set installment due dates and visit dates yourself. Warranty value is locked at 0.',
     createSubmit: 'Create contract',

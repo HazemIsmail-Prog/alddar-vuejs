@@ -5,18 +5,29 @@ import { useI18n } from 'vue-i18n'
 import { onClickOutside, useDebounceFn } from '@vueuse/core'
 import { Plus, Search, X } from '@lucide/vue'
 import api from '@/api/client'
-import { actionLabel, personName } from '@/i18n'
+import { actionLabel, named, personName } from '@/i18n'
+import { Badge } from '@/components/ui/badge'
 import { useAuthStore } from '@/stores/auth'
 import { useModalsStore } from '@/stores/modals'
 import { useStatusStore } from '@/stores/statuses'
 
-type SearchAction = { label: string; to?: string; modal?: string; client_id?: number }
+type SearchAction = {
+  label: string
+  to?: string
+  modal?: string
+  client_id?: number
+  contract_id?: number
+  location_id?: number
+  department_id?: number
+}
 type SearchItem = {
   id: number
   title: string
   subtitle: string
   href: string
   actions: SearchAction[]
+  type?: string
+  status?: string
   name_en?: string
   name_ar?: string
   technician?: { id: number; name_en: string; name_ar: string } | null
@@ -69,6 +80,12 @@ function itemSubtitle(item: SearchItem) {
     : item.subtitle
   const tech = item.technician ? personName(item.technician) : ''
   return [base, tech].filter(Boolean).join(' · ')
+}
+
+function contractStatusClass(status?: string) {
+  if (status === 'active') return 'border-transparent bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-200'
+  if (status === 'expired') return 'border-transparent bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-200'
+  return ''
 }
 
 const runSearch = useDebounceFn(async () => {
@@ -196,7 +213,20 @@ function onKey(event: KeyboardEvent) {
             <p class="px-3 pt-2 pb-1 text-[10px] font-semibold tracking-wide text-slate-400 uppercase">{{ groupLabel(group) }}</p>
             <div v-for="item in group.items" :key="group.type + item.id" class="px-3 py-2 hover:bg-slate-50 dark:hover:bg-white/5">
               <button type="button" class="block w-full text-start" @click="go(item.href)">
-                <p class="truncate text-sm font-medium text-slate-900 dark:text-slate-100">{{ itemTitle(item) }}</p>
+                <div class="flex items-center gap-1.5">
+                  <p class="min-w-0 truncate text-sm font-medium text-slate-900 dark:text-slate-100">{{ itemTitle(item) }}</p>
+                  <Badge
+                    v-if="item.type"
+                    variant="outline"
+                    class="shrink-0 text-[10px]"
+                  >{{ named('contractType', item.type) }}</Badge>
+                  <Badge
+                    v-if="item.status"
+                    variant="secondary"
+                    class="shrink-0 text-[10px]"
+                    :class="contractStatusClass(item.status)"
+                  >{{ named('contractStatus', item.status) }}</Badge>
+                </div>
                 <p v-if="itemSubtitle(item)" class="truncate text-xs text-slate-500">{{ itemSubtitle(item) }}</p>
               </button>
               <div class="mt-1.5 flex flex-wrap gap-1">

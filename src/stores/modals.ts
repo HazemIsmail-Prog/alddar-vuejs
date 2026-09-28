@@ -22,6 +22,9 @@ export const useModalsStore = defineStore('modals', () => {
     token: 0,
     open: false,
     client: null as ClientRecord | null,
+    contractId: null as number | null,
+    locationId: null as number | null,
+    departmentId: null as number | null,
   })
 
   const savedAt = ref(0)
@@ -58,8 +61,18 @@ export const useModalsStore = defineStore('modals', () => {
     contractForm.value = { ...contractForm.value, open: false }
   }
 
-  function createOrder(client?: ClientRecord | null) {
-    orderForm.value = { token: nextToken(), open: true, client: client ?? null }
+  function createOrder(
+    client?: ClientRecord | null,
+    opts?: { contractId?: number | null; locationId?: number | null; departmentId?: number | null },
+  ) {
+    orderForm.value = {
+      token: nextToken(),
+      open: true,
+      client: client ?? null,
+      contractId: opts?.contractId ?? null,
+      locationId: opts?.locationId ?? null,
+      departmentId: opts?.departmentId ?? null,
+    }
   }
 
   function closeOrder() {
@@ -74,13 +87,32 @@ export const useModalsStore = defineStore('modals', () => {
     createOrder(await fetchClient(clientId))
   }
 
+  async function createOrderForContract(
+    clientId: number,
+    contractId: number,
+    locationId: number,
+    departmentId?: number | null,
+  ) {
+    createOrder(await fetchClient(clientId), { contractId, locationId, departmentId })
+  }
+
   async function createContractForClient(clientId: number) {
     createContract(await fetchClient(clientId))
   }
 
-  async function runSearchAction(action: { modal?: string; client_id?: number }) {
+  async function runSearchAction(action: {
+    modal?: string
+    client_id?: number
+    contract_id?: number
+    location_id?: number
+    department_id?: number
+  }) {
     if (action.modal === 'create-order' && action.client_id) {
-      await createOrderForClient(action.client_id)
+      if (action.contract_id && action.location_id) {
+        await createOrderForContract(action.client_id, action.contract_id, action.location_id, action.department_id)
+      } else {
+        await createOrderForClient(action.client_id)
+      }
       return true
     }
     if (action.modal === 'create-contract' && action.client_id) {
@@ -111,6 +143,7 @@ export const useModalsStore = defineStore('modals', () => {
     createOrder,
     closeOrder,
     createOrderForClient,
+    createOrderForContract,
     createContractForClient,
     runSearchAction,
   }

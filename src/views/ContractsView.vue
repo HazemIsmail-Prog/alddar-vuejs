@@ -27,6 +27,9 @@ import { useModalsStore } from '@/stores/modals'
 import { useInboxStore } from '@/stores/inbox'
 import { usePdfStore } from '@/stores/pdf'
 
+const expiringWindows = ['30', '60', '90'] as const
+type ExpiringWindow = (typeof expiringWindows)[number]
+
 const emptyFilters = () => ({
   number: '',
   client_name: '',
@@ -38,6 +41,7 @@ const emptyFilters = () => ({
   start_to: '',
   end_from: '',
   end_to: '',
+  expiring: '' as ExpiringWindow | '',
   created_from: '',
   created_to: '',
   includes_spare_parts: 'all' as 'all' | '1' | '0',
@@ -85,6 +89,15 @@ const yesNoOptions = computed(() => [
   { value: '0', label: t('common.no') },
 ])
 
+const expiringOptions = computed(() => [
+  ...expiringWindows.map((days) => ({ value: days, label: t('contracts.expiringDays', { n: days }) })),
+])
+
+function expiringFromQuery(value: unknown): ExpiringWindow | '' {
+  const raw = Array.isArray(value) ? value[0] : value
+  return expiringWindows.includes(raw as ExpiringWindow) ? (raw as ExpiringWindow) : ''
+}
+
 const hasFilters = computed(() => {
   const f = filters.value
   return Boolean(
@@ -97,6 +110,7 @@ const hasFilters = computed(() => {
     || f.start_to
     || f.end_from
     || f.end_to
+    || f.expiring
     || f.created_from
     || f.created_to
     || f.includes_spare_parts !== 'all'
@@ -117,6 +131,7 @@ function filterParams() {
     start_to: f.start_to || undefined,
     end_from: f.end_from || undefined,
     end_to: f.end_to || undefined,
+    expiring: f.expiring || undefined,
     created_from: f.created_from || undefined,
     created_to: f.created_to || undefined,
     includes_spare_parts: f.includes_spare_parts === 'all' ? undefined : f.includes_spare_parts,
@@ -135,6 +150,13 @@ async function load() {
 
 const searchNow = useDebounceFn(load, 250)
 watch(filters, searchNow, { deep: true })
+watch(
+  () => route.query.expiring,
+  (value) => {
+    const next = expiringFromQuery(value)
+    if (next !== filters.value.expiring) filters.value.expiring = next
+  },
+)
 watch(() => modals.savedAt, () => {
   if (modals.savedKind === 'contract') void load()
 })
@@ -204,6 +226,7 @@ onMounted(async () => {
     return
   }
   departments.value = (await api.get('/api/departments', { params: { is_service: 1 } })).data
+  filters.value.expiring = expiringFromQuery(route.query.expiring)
   await load()
   const clientId = Number(route.query.client)
   if (clientId && route.query.new === '1' && auth.can('contracts.create')) {
@@ -251,6 +274,9 @@ onMounted(async () => {
           <FilterDateRange v-model:from="filters.start_from" v-model:to="filters.start_to" :label="t('contracts.start')" />
           <FilterDateRange v-model:from="filters.end_from" v-model:to="filters.end_to" :label="t('contracts.end')" />
           <FilterDateRange v-model:from="filters.created_from" v-model:to="filters.created_to" :label="t('orders.createdDate')" />
+        </FilterGroup>
+        <FilterGroup :label="t('contracts.expiring')">
+          <FilterSelect v-model="filters.expiring" :label="t('contracts.expiring')" :options="expiringOptions" :none="''" />
         </FilterGroup>
         <div v-if="hasFilters" class="flex items-end self-end">
           <Button type="button" variant="ghost" size="sm" class="h-8" @click="clearFilters">
